@@ -87,8 +87,34 @@
     border-color: var(--color-border);
   }
 
+  html {
+    /* Always reserve the vertical scrollbar's width, even on pages short
+       enough not to need it yet. Without this, centered content shifts
+       sideways the moment a scrollbar first appears (e.g. new sections
+       pushing the page past viewport height, or a dropdown/select
+       temporarily growing the document). `overflow-y: scroll` is used
+       instead of `scrollbar-gutter: stable` because Chrome only starts
+       honoring `stable` after the first real overflow, which causes a
+       one-time permanent width jump right after that first overflow. */
+    overflow-y: scroll;
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+  }
+
+  /* Radix's scroll-lock (used by Select/Dialog/Popover) injects an
+     unconditional `padding-right: 17px !important` on body whenever one of
+     those opens, to compensate for a scrollbar it assumes it just removed.
+     Since the scrollbar gutter here is already permanently reserved via
+     `overflow-y: scroll` above, that padding is pure redundant space and
+     shoves centered content left every time a dropdown/dialog opens (then
+     back right when it closes). A layered !important rule beats an
+     unlayered !important rule regardless of injection order, so this
+     neutralizes it for good. */
+  body[data-scroll-locked] {
+    padding-right: 0 !important;
+    margin-right: 0 !important;
   }
 }

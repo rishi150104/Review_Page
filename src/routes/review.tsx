@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { getPlatform } from "@/config/platforms";
 import { generateReview, type ReviewAnswers } from "@/lib/review-api";
@@ -35,6 +35,16 @@ export const Route = createFileRoute("/review")({
 
 type Status = "idle" | "loading" | "error" | "done";
 
+// Vertical-only scroll: scrollIntoView can also nudge horizontal scroll when
+// the layout shifts (e.g. a closing dropdown briefly widens the document),
+// which reads as unwanted side-to-side motion.
+function scrollToSection(ref: RefObject<HTMLDivElement | null>) {
+  const target = ref.current;
+  if (!target) return;
+  const top = target.getBoundingClientRect().top + window.scrollY - 24;
+  window.scrollTo({ top, left: 0, behavior: "smooth" });
+}
+
 function ReviewPage() {
   const [platformId, setPlatformId] = useState<string | null>(null);
   const [platformConfirmed, setPlatformConfirmed] = useState(false);
@@ -43,8 +53,27 @@ function ReviewPage() {
   const [status, setStatus] = useState<Status>("idle");
   const [review, setReview] = useState("");
   const [opened, setOpened] = useState(false);
+  const methodSectionRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const successRef = useRef<HTMLDivElement>(null);
 
   const platform = getPlatform(platformId);
+
+  useEffect(() => {
+    if (platformConfirmed) scrollToSection(methodSectionRef);
+  }, [platformConfirmed]);
+
+  useEffect(() => {
+    if (method) scrollToSection(contentRef);
+  }, [method]);
+
+  useEffect(() => {
+    if (status === "done" || status === "error") scrollToSection(contentRef);
+  }, [status]);
+
+  useEffect(() => {
+    if (opened) scrollToSection(successRef);
+  }, [opened]);
 
   const handleGenerate = async () => {
     if (!platform || status === "loading") return;
@@ -67,10 +96,10 @@ function ReviewPage() {
 
   return (
     <main className="min-h-screen bg-background">
-      <div className="mx-auto w-full max-w-2xl px-5 py-14 sm:px-6 sm:py-20">
+      <div className="mx-auto w-full max-w-2xl px-5 py-8 sm:px-6 sm:py-14">
         <header className="text-center">
           <p className="text-xs font-semibold tracking-[0.18em] text-primary uppercase">
-            Client Feedback
+            Viralchilly Client Advocacy Program
           </p>
           <h1 className="mt-4 font-display text-4xl leading-tight tracking-tight text-balance sm:text-5xl">
             Share Your Experience
@@ -96,45 +125,55 @@ function ReviewPage() {
           />
 
           {platformConfirmed && platform && (
-            <ReviewMethodSelector
-              value={method}
-              onChange={(next) => {
-                setMethod(next);
-                setStatus("idle");
-                setReview("");
-                setOpened(false);
-              }}
-            />
+            <div ref={methodSectionRef}>
+              <ReviewMethodSelector
+                value={method}
+                onChange={(next) => {
+                  setMethod(next);
+                  setStatus("idle");
+                  setReview("");
+                  setOpened(false);
+                }}
+              />
+            </div>
           )}
 
-          {platformConfirmed && platform && method === "self" && (
-            <SelfWriteCard platform={platform} onOpened={() => setOpened(true)} />
-          )}
-
-          {platformConfirmed && platform && method === "assisted" && (
-            <>
-              {status === "idle" && (
-                <ReviewQuestionnaire
-                  answers={answers}
-                  onAnswersChange={setAnswers}
-                  onSubmit={handleGenerate}
-                  onBackToStart={resetMethod}
-                />
+          {platformConfirmed && platform && method && (
+            <div ref={contentRef}>
+              {method === "self" && (
+                <SelfWriteCard platform={platform} onOpened={() => setOpened(true)} />
               )}
-              {status === "loading" && <ReviewLoading />}
-              {status === "error" && <ReviewError onRetry={handleGenerate} />}
-              {status === "done" && (
-                <GeneratedReview
-                  platform={platform}
-                  review={review}
-                  onReviewChange={setReview}
-                  onOpened={() => setOpened(true)}
-                />
+
+              {method === "assisted" && (
+                <>
+                  {status === "idle" && (
+                    <ReviewQuestionnaire
+                      answers={answers}
+                      onAnswersChange={setAnswers}
+                      onSubmit={handleGenerate}
+                      onBackToStart={resetMethod}
+                    />
+                  )}
+                  {status === "loading" && <ReviewLoading />}
+                  {status === "error" && <ReviewError onRetry={handleGenerate} />}
+                  {status === "done" && (
+                    <GeneratedReview
+                      platform={platform}
+                      review={review}
+                      onReviewChange={setReview}
+                      onOpened={() => setOpened(true)}
+                    />
+                  )}
+                </>
               )}
-            </>
+            </div>
           )}
 
-          {opened && <SuccessMessage />}
+          {opened && (
+            <div ref={successRef}>
+              <SuccessMessage />
+            </div>
+          )}
         </div>
       </div>
     </main>
