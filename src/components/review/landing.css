@@ -196,14 +196,9 @@
 /* Platform row */
 .vc-lp .platforms {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 12px;
   margin-bottom: 18px;
-}
-@media (max-width: 720px) {
-  .vc-lp .platforms {
-    grid-template-columns: repeat(3, 1fr);
-  }
 }
 @media (max-width: 420px) {
   .vc-lp .platforms {
@@ -217,7 +212,7 @@
   background: var(--card);
   border: 1.5px solid var(--line);
   border-radius: 13px;
-  padding: 16px 8px 12px;
+  padding: 28px 8px 24px;
   transition:
     border-color 0.15s ease,
     transform 0.15s ease,
@@ -377,19 +372,8 @@
 }
 .vc-lp .rewards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 12px;
-}
-.vc-lp .reward:nth-child(4) {
-  grid-column: 2;
-}
-@media (max-width: 680px) {
-  .vc-lp .rewards {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .vc-lp .reward:nth-child(4) {
-    grid-column: auto;
-  }
 }
 @media (max-width: 420px) {
   .vc-lp .rewards {
@@ -458,6 +442,12 @@
 .vc-lp .reward .rv a {
   color: var(--blue);
   text-decoration: none;
+}
+.vc-lp .reward .rv strong {
+  color: var(--blue-strong);
+  background: var(--blue-soft);
+  padding: 1px 6px;
+  border-radius: 5px;
 }
 .vc-lp .reward .val {
   display: inline-block;
