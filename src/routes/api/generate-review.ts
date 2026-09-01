@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
+import { appendSubmissionRow } from "@/lib/google-sheets";
 
 /**
  * Backend endpoint for review generation.
@@ -10,6 +11,8 @@ import { z } from "zod";
 const bodySchema = z.object({
   platform: z.string().min(1),
   answers: z.object({
+    name: z.string().default(""),
+    email: z.string().default(""),
     service: z.string().default(""),
     goal: z.string().default(""),
     experience: z.string().default(""),
@@ -35,10 +38,7 @@ export const Route = createFileRoute("/api/generate-review")({
       POST: async ({ request }) => {
         const apiKey = process.env["OPENAI_API_KEY"];
         if (!apiKey) {
-          return Response.json(
-            { error: "Review generation is not configured." },
-            { status: 503 },
-          );
+          return Response.json({ error: "Review generation is not configured." }, { status: 503 });
         }
 
         let parsed;
@@ -58,10 +58,7 @@ export const Route = createFileRoute("/api/generate-review")({
         ].filter(([, value]) => (value ?? "").trim() !== "");
 
         if (fields.length === 0) {
-          return Response.json(
-            { error: "Please answer at least one question." },
-            { status: 400 },
-          );
+          return Response.json({ error: "Please answer at least one question." }, { status: 400 });
         }
 
         const userPrompt = [
@@ -97,6 +94,24 @@ export const Route = createFileRoute("/api/generate-review")({
           const review = data.choices?.[0]?.message?.content?.trim();
           if (!review) {
             return Response.json({ error: "Empty generation result." }, { status: 502 });
+          }
+
+          try {
+            await appendSubmissionRow([
+              new Date().toISOString(),
+              answers.name,
+              answers.email,
+              platform,
+              answers.service,
+              answers.goal,
+              answers.experience,
+              answers.likedMost,
+              answers.results,
+              review,
+            ]);
+          } catch (err) {
+            // Logging the submission is best-effort — never fail the request over it.
+            console.error("Google Sheets logging failed:", err);
           }
 
           return Response.json({ review });

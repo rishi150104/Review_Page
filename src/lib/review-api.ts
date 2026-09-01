@@ -7,6 +7,8 @@
  */
 
 export interface ReviewAnswers {
+  name: string;
+  email: string;
   service: string;
   goal: string;
   experience: string;
@@ -38,7 +40,8 @@ export async function generateReview(
   });
 
   if (!response.ok) {
-    throw new Error(`Review generation failed with status ${response.status}`);
+    const body = (await response.json().catch(() => null)) as { error?: string } | null;
+    throw new Error(body?.error || `Review generation failed with status ${response.status}`);
   }
 
   const data = (await response.json()) as Partial<GenerateReviewResponse>;

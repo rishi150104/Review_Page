@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label";
 import type { ReviewAnswers } from "@/lib/review-api";
 
 export const emptyAnswers: ReviewAnswers = {
+  name: "",
+  email: "",
   service: "",
   goal: "",
   experience: "",
@@ -14,7 +16,7 @@ export const emptyAnswers: ReviewAnswers = {
   results: "",
 };
 
-type AnswerKey = keyof ReviewAnswers;
+type AnswerKey = keyof Omit<ReviewAnswers, "name" | "email">;
 
 interface QuestionDef {
   key: AnswerKey;
@@ -102,6 +104,8 @@ interface ReviewQuestionnaireProps {
   onAnswersChange: (answers: ReviewAnswers) => void;
   onSubmit: () => void;
   onBackToStart: () => void;
+  /** False when the name/email fields above haven't been filled in yet. */
+  canSubmit: boolean;
 }
 
 export function ReviewQuestionnaire({
@@ -109,6 +113,7 @@ export function ReviewQuestionnaire({
   onAnswersChange,
   onSubmit,
   onBackToStart,
+  canSubmit,
 }: ReviewQuestionnaireProps) {
   const [step, setStep] = useState(0);
   const total = questions.length;
@@ -162,6 +167,7 @@ export function ReviewQuestionnaire({
           type="button"
           size="lg"
           className="h-12 sm:px-8"
+          disabled={isLast && !canSubmit}
           onClick={() => (isLast ? onSubmit() : setStep((s) => s + 1))}
         >
           {isLast ? (
@@ -177,6 +183,11 @@ export function ReviewQuestionnaire({
           )}
         </Button>
       </div>
+      {isLast && !canSubmit && (
+        <p className="mt-3 text-right text-sm text-muted-foreground">
+          Add your name and email above (steps 1 &amp; 2) to generate your review.
+        </p>
+      )}
     </section>
   );
 }

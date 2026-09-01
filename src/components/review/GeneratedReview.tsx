@@ -1,8 +1,16 @@
 import { useEffect, useState } from "react";
-import { Check, Copy } from "lucide-react";
+import { Check, Copy, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { PlatformReviewButton } from "./PlatformReviewButton";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import type { Platform } from "@/config/platforms";
+
+const FEEDBACK_EMAIL = "feedback@viralchilly.com";
 
 interface GeneratedReviewProps {
   platform: Platform;
@@ -18,6 +26,12 @@ export function GeneratedReview({
   onOpened,
 }: GeneratedReviewProps) {
   const [copied, setCopied] = useState(false);
+  const [showScreenshotPrompt, setShowScreenshotPrompt] = useState(false);
+
+  // Fires once, right when a freshly generated review mounts this component.
+  useEffect(() => {
+    setShowScreenshotPrompt(true);
+  }, []);
 
   useEffect(() => {
     if (!copied) return;
@@ -25,13 +39,14 @@ export function GeneratedReview({
     return () => window.clearTimeout(timer);
   }, [copied]);
 
-  const handleCopy = async () => {
+  const handleCopyAndOpen = async () => {
     try {
       await navigator.clipboard.writeText(review);
       setCopied(true);
     } catch {
       setCopied(false);
     }
+    onOpened();
   };
 
   return (
@@ -56,29 +71,45 @@ export function GeneratedReview({
         Feel free to edit the review before posting so it accurately reflects your experience.
       </p>
 
-      <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-        <Button
-          type="button"
-          size="lg"
-          variant="outline"
-          className="h-12"
-          onClick={handleCopy}
-          aria-live="polite"
+      <Button asChild size="lg" className="mt-6 h-12">
+        <a
+          href={platform.reviewUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={handleCopyAndOpen}
         >
           {copied ? (
             <>
-              <Check className="size-4 text-success" aria-hidden="true" />
-              Copied!
+              <Check className="size-4" aria-hidden="true" />
+              Copied — opening {platform.name}...
             </>
           ) : (
             <>
               <Copy className="size-4" aria-hidden="true" />
-              Copy Review
+              Copy &amp; Leave Review on {platform.name}
+              <ExternalLink className="size-4" aria-hidden="true" />
             </>
           )}
-        </Button>
-        <PlatformReviewButton platform={platform} onOpened={onOpened} className="h-12" />
-      </div>
+        </a>
+      </Button>
+
+      <Dialog open={showScreenshotPrompt} onOpenChange={setShowScreenshotPrompt}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Your review is ready</DialogTitle>
+            <DialogDescription>
+              Please take a screenshot of this and send it to{" "}
+              <a href={`mailto:${FEEDBACK_EMAIL}`} className="font-medium text-primary">
+                {FEEDBACK_EMAIL}
+              </a>
+              .
+            </DialogDescription>
+          </DialogHeader>
+          <div className="rounded-xl border border-border bg-surface p-4 text-sm leading-relaxed whitespace-pre-wrap text-foreground">
+            {review}
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }

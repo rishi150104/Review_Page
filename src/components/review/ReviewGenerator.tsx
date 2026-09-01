@@ -15,14 +15,14 @@ export function ReviewLoading() {
   );
 }
 
-export function ReviewError({ onRetry }: { onRetry: () => void }) {
+export function ReviewError({ onRetry, message }: { onRetry: () => void; message?: string }) {
   return (
     <section
       className="rounded-2xl border border-destructive/30 bg-card p-8 text-center shadow-card"
       role="alert"
     >
       <p className="text-base font-semibold">
-        We couldn&apos;t generate your review right now. Please try again.
+        {message || "We couldn't generate your review right now. Please try again."}
       </p>
       <Button type="button" size="lg" className="mt-6 h-12" onClick={onRetry}>
         <RefreshCw className="size-4" aria-hidden="true" />

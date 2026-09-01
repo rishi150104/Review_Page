@@ -11,10 +11,7 @@
  */
 
 export type PlatformCategory =
-  | "Review Platforms"
-  | "Marketplaces"
-  | "Social"
-  | "Featured / Expertise-type directories";
+  "Review Platforms" | "Marketplaces" | "Social" | "Featured / Expertise-type directories";
 
 export interface Platform {
   id: string;
@@ -32,6 +29,15 @@ const PLACEHOLDER = "https://example.com/replace-with-company-profile-url";
 
 export const platforms: Platform[] = [
   {
+    id: "video-testimonial",
+    name: "Video Testimonial",
+    displayName: "Video Testimonial",
+    category: "Review Platforms",
+    icon: "video",
+    reviewUrl: PLACEHOLDER,
+    active: true,
+  },
+  {
     id: "clutch",
     name: "Clutch",
     displayName: "Clutch",
@@ -41,63 +47,9 @@ export const platforms: Platform[] = [
     active: true,
   },
   {
-    id: "trustpilot",
-    name: "Trustpilot",
-    displayName: "Trustpilot",
-    category: "Review Platforms",
-    icon: "star",
-    reviewUrl: PLACEHOLDER,
-    active: true,
-  },
-  {
-    id: "g2",
-    name: "G2",
-    displayName: "G2",
-    category: "Review Platforms",
-    icon: "star",
-    reviewUrl: PLACEHOLDER,
-    active: true,
-  },
-  {
-    id: "goodfirms",
-    name: "GoodFirms",
-    displayName: "GoodFirms",
-    category: "Review Platforms",
-    icon: "star",
-    reviewUrl: PLACEHOLDER,
-    active: true,
-  },
-  {
-    id: "capterra",
-    name: "Capterra",
-    displayName: "Capterra",
-    category: "Review Platforms",
-    icon: "star",
-    reviewUrl: PLACEHOLDER,
-    active: true,
-  },
-  {
-    id: "bbb",
-    name: "BBB",
-    displayName: "Better Business Bureau",
-    category: "Review Platforms",
-    icon: "shield-check",
-    reviewUrl: PLACEHOLDER,
-    active: true,
-  },
-  {
-    id: "yelp",
-    name: "Yelp",
-    displayName: "Yelp",
-    category: "Review Platforms",
-    icon: "star",
-    reviewUrl: PLACEHOLDER,
-    active: true,
-  },
-  {
     id: "google",
     name: "Google",
-    displayName: "Google Business Profile",
+    displayName: "Google Business",
     category: "Review Platforms",
     icon: "globe",
     reviewUrl: PLACEHOLDER,
@@ -113,6 +65,15 @@ export const platforms: Platform[] = [
     active: true,
   },
   {
+    id: "trustpilot",
+    name: "Trustpilot",
+    displayName: "Trustpilot",
+    category: "Review Platforms",
+    icon: "star",
+    reviewUrl: PLACEHOLDER,
+    active: true,
+  },
+  {
     id: "linkedin",
     name: "LinkedIn",
     displayName: "LinkedIn",
@@ -124,11 +85,56 @@ export const platforms: Platform[] = [
   {
     id: "facebook",
     name: "Facebook",
-    displayName: "Facebook Reviews",
+    displayName: "Facebook",
     category: "Social",
     icon: "facebook",
     reviewUrl: PLACEHOLDER,
-    active: true,
+    active: false,
+  },
+  {
+    id: "g2",
+    name: "G2",
+    displayName: "G2",
+    category: "Review Platforms",
+    icon: "star",
+    reviewUrl: PLACEHOLDER,
+    active: false,
+  },
+  {
+    id: "goodfirms",
+    name: "GoodFirms",
+    displayName: "GoodFirms",
+    category: "Review Platforms",
+    icon: "star",
+    reviewUrl: PLACEHOLDER,
+    active: false,
+  },
+  {
+    id: "capterra",
+    name: "Capterra",
+    displayName: "Capterra",
+    category: "Review Platforms",
+    icon: "star",
+    reviewUrl: PLACEHOLDER,
+    active: false,
+  },
+  {
+    id: "bbb",
+    name: "BBB",
+    displayName: "Better Business Bureau",
+    category: "Review Platforms",
+    icon: "shield-check",
+    reviewUrl: PLACEHOLDER,
+    active: false,
+  },
+  {
+    id: "yelp",
+    name: "Yelp",
+    displayName: "Yelp",
+    category: "Review Platforms",
+    icon: "star",
+    reviewUrl: PLACEHOLDER,
+    active: false,
   },
   {
     id: "designrush",
@@ -137,7 +143,7 @@ export const platforms: Platform[] = [
     category: "Featured / Expertise-type directories",
     icon: "award",
     reviewUrl: PLACEHOLDER,
-    active: true,
+    active: false,
   },
 ];
 

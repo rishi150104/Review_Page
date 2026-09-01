@@ -1,17 +1,17 @@
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { Clock, Heart, Info, Gift as GiftIcon, Users, Zap } from "lucide-react";
 import { getPlatform } from "@/config/platforms";
 import { generateReview, type ReviewAnswers } from "@/lib/review-api";
-import { PlatformSelector } from "@/components/review/PlatformSelector";
-import {
-  ReviewMethodSelector,
-  type ReviewMethod,
-} from "@/components/review/ReviewMethodSelector";
+import { PlatformTiles } from "@/components/review/PlatformTiles";
+import { AdvocacyRewards } from "@/components/review/AdvocacyRewards";
+import { ReviewMethodSelector, type ReviewMethod } from "@/components/review/ReviewMethodSelector";
 import { ReviewQuestionnaire, emptyAnswers } from "@/components/review/ReviewQuestionnaire";
 import { ReviewError, ReviewLoading } from "@/components/review/ReviewGenerator";
 import { GeneratedReview } from "@/components/review/GeneratedReview";
 import { SelfWriteCard } from "@/components/review/SelfWriteCard";
 import { SuccessMessage } from "@/components/review/SuccessMessage";
+import "@/components/review/landing.css";
 
 const title = "Share Your Experience — Client Review";
 const description =
@@ -35,6 +35,8 @@ export const Route = createFileRoute("/review")({
 
 type Status = "idle" | "loading" | "error" | "done";
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 // Vertical-only scroll: scrollIntoView can also nudge horizontal scroll when
 // the layout shifts (e.g. a closing dropdown briefly widens the document),
 // which reads as unwanted side-to-side motion.
@@ -47,21 +49,19 @@ function scrollToSection(ref: RefObject<HTMLDivElement | null>) {
 
 function ReviewPage() {
   const [platformId, setPlatformId] = useState<string | null>(null);
-  const [platformConfirmed, setPlatformConfirmed] = useState(false);
   const [method, setMethod] = useState<ReviewMethod | null>(null);
   const [answers, setAnswers] = useState<ReviewAnswers>(emptyAnswers);
   const [status, setStatus] = useState<Status>("idle");
   const [review, setReview] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [opened, setOpened] = useState(false);
-  const methodSectionRef = useRef<HTMLDivElement>(null);
+  const step2Ref = useRef<HTMLDivElement>(null);
+  const step3Ref = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const successRef = useRef<HTMLDivElement>(null);
 
   const platform = getPlatform(platformId);
-
-  useEffect(() => {
-    if (platformConfirmed) scrollToSection(methodSectionRef);
-  }, [platformConfirmed]);
+  const canGenerate = answers.name.trim() !== "" && EMAIL_PATTERN.test(answers.email.trim());
 
   useEffect(() => {
     if (method) scrollToSection(contentRef);
@@ -75,6 +75,14 @@ function ReviewPage() {
     if (opened) scrollToSection(successRef);
   }, [opened]);
 
+  const resetMethod = () => {
+    setMethod(null);
+    setStatus("idle");
+    setReview("");
+    setErrorMessage("");
+    setOpened(false);
+  };
+
   const handleGenerate = async () => {
     if (!platform || status === "loading") return;
     setStatus("loading");
@@ -82,99 +90,209 @@ function ReviewPage() {
       const text = await generateReview({ platform: platform.id, answers });
       setReview(text);
       setStatus("done");
-    } catch {
+    } catch (err) {
+      setErrorMessage(err instanceof Error ? err.message : "");
       setStatus("error");
     }
   };
 
-  const resetMethod = () => {
-    setMethod(null);
-    setStatus("idle");
-    setReview("");
-    setOpened(false);
-  };
-
   return (
-    <main className="min-h-screen bg-background">
-      <div className="mx-auto w-full max-w-2xl px-5 py-8 sm:px-6 sm:py-14">
-        <header className="text-center">
-          <p className="text-xs font-semibold tracking-[0.18em] text-primary uppercase">
-            Viralchilly Client Advocacy Program
-          </p>
-          <h1 className="mt-4 font-display text-4xl leading-tight tracking-tight text-balance sm:text-5xl">
-            Share Your Experience
-          </h1>
-          <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-pretty text-muted-foreground">
-            We&apos;d love to hear about your experience working with us. Choose where you&apos;d
-            like to leave your feedback and we&apos;ll make the process simple.
-          </p>
-          <p className="mx-auto mt-4 max-w-lg text-sm text-muted-foreground">
-            Your feedback helps us improve and helps other businesses make informed decisions.
-          </p>
-        </header>
+    <main className="vc-lp">
+      <div className="wrap">
+        <p className="eyebrow">Viralchilly Client Advocacy Program</p>
+        <h1>Share Your Experience</h1>
+        <p className="lede">
+          Your feedback helps us improve and helps other founders choose with confidence.
+        </p>
 
-        <div className="mt-10 space-y-6">
-          <PlatformSelector
+        <div className="badges">
+          <span className="badge">
+            <Zap aria-hidden="true" /> Quick &amp; easy
+          </span>
+          <span className="badge">
+            <Clock aria-hidden="true" /> Takes 2 minutes
+          </span>
+          <span className="badge">
+            <Heart aria-hidden="true" /> We truly appreciate it
+          </span>
+        </div>
+
+        {/* Step 1: name */}
+        <section className="panel">
+          <div className="step-head">
+            <span className="step-num">1</span>
+            <div>
+              <h2>What&apos;s your name?</h2>
+              <p>So we know who to thank.</p>
+            </div>
+          </div>
+          <input
+            type="text"
+            className="field"
+            placeholder="Jane Smith"
+            value={answers.name}
+            onChange={(e) => setAnswers({ ...answers, name: e.target.value })}
+          />
+        </section>
+
+        {/* Step 2: email */}
+        <section className="panel">
+          <div className="step-head">
+            <span className="step-num">2</span>
+            <div>
+              <h2>What&apos;s your email?</h2>
+              <p>So we know where to send your thank-you.</p>
+            </div>
+          </div>
+          <input
+            type="email"
+            className="field"
+            placeholder="jane@company.com"
+            value={answers.email}
+            onChange={(e) => setAnswers({ ...answers, email: e.target.value })}
+          />
+        </section>
+
+        {/* Step 3: public review */}
+        <section className="panel">
+          <div className="step-head">
+            <span className="step-num">3</span>
+            <div>
+              <h2>Where would you like to leave a review?</h2>
+              <p>Pick a platform to continue.</p>
+            </div>
+          </div>
+
+          <PlatformTiles
             value={platformId}
-            onChange={(id) => {
-              setPlatformId(id);
-              setPlatformConfirmed(false);
+            onChange={(next) => {
+              setPlatformId(next.id);
               resetMethod();
+              scrollToSection(step2Ref);
             }}
-            onContinue={() => setPlatformConfirmed(true)}
           />
 
-          {platformConfirmed && platform && (
-            <div ref={methodSectionRef}>
-              <ReviewMethodSelector
-                value={method}
-                onChange={(next) => {
-                  setMethod(next);
-                  setStatus("idle");
-                  setReview("");
-                  setOpened(false);
-                }}
-              />
-            </div>
-          )}
+          <div className="note">
+            <Info aria-hidden="true" />
+            <span>
+              No reward is attached to these reviews — the platforms don&apos;t allow it, and we
+              respect that. Just your honest take. (Thank-you gifts live in step 4, for advocacy you
+              share with us directly.)
+            </span>
+          </div>
+        </section>
 
-          {platformConfirmed && platform && method && (
-            <div ref={contentRef}>
-              {method === "self" && (
-                <SelfWriteCard platform={platform} onOpened={() => setOpened(true)} />
-              )}
-
-              {method === "assisted" && (
-                <>
-                  {status === "idle" && (
-                    <ReviewQuestionnaire
-                      answers={answers}
-                      onAnswersChange={setAnswers}
-                      onSubmit={handleGenerate}
-                      onBackToStart={resetMethod}
-                    />
-                  )}
-                  {status === "loading" && <ReviewLoading />}
-                  {status === "error" && <ReviewError onRetry={handleGenerate} />}
-                  {status === "done" && (
-                    <GeneratedReview
-                      platform={platform}
-                      review={review}
-                      onReviewChange={setReview}
-                      onOpened={() => setOpened(true)}
-                    />
-                  )}
-                </>
-              )}
+        {/* Step 4: advocacy + reward */}
+        <section className="panel" ref={step2Ref}>
+          <div className="step-head">
+            <span className="step-num">4</span>
+            <div>
+              <h2>
+                Go further &amp; pick a thank-you
+                <span className="tag">Our way of saying thanks</span>
+              </h2>
+              <p>Share your story with us directly, then choose a reward you&apos;d like.</p>
             </div>
-          )}
+          </div>
 
-          {opened && (
-            <div ref={successRef}>
-              <SuccessMessage />
+          <div className="note">
+            <GiftIcon aria-hidden="true" />
+            <span>
+              A thank-you gift is for the time you give us — never tied to a rating or a public
+              review. Pick the reward you&apos;d like, then share your feedback with us to receive
+              it.
+            </span>
+          </div>
+
+          <AdvocacyRewards onRewardSelected={() => scrollToSection(step3Ref)} />
+        </section>
+
+        {/* Step 5: write mode */}
+        <section className="panel" ref={step3Ref}>
+          <div className="step-head">
+            <span className="step-num">5</span>
+            <div>
+              <h2>How would you like to write it?</h2>
+              <p>
+                {platform
+                  ? "We'll make it as easy as possible."
+                  : "Pick a platform in step 3 first."}
+              </p>
             </div>
-          )}
+          </div>
+          <ReviewMethodSelector
+            value={method}
+            disabled={!platform}
+            onChange={(next) => {
+              setMethod(next);
+              setStatus("idle");
+              setReview("");
+              setErrorMessage("");
+              setOpened(false);
+            }}
+          />
+        </section>
+
+        {platform && method && (
+          <div ref={contentRef} className="mt-6">
+            {method === "self" && (
+              <SelfWriteCard platform={platform} onOpened={() => setOpened(true)} />
+            )}
+
+            {method === "assisted" && (
+              <>
+                {status === "idle" && (
+                  <ReviewQuestionnaire
+                    answers={answers}
+                    onAnswersChange={setAnswers}
+                    onSubmit={handleGenerate}
+                    onBackToStart={resetMethod}
+                    canSubmit={canGenerate}
+                  />
+                )}
+                {status === "loading" && <ReviewLoading />}
+                {status === "error" && (
+                  <ReviewError onRetry={handleGenerate} message={errorMessage} />
+                )}
+                {status === "done" && (
+                  <GeneratedReview
+                    platform={platform}
+                    review={review}
+                    onReviewChange={setReview}
+                    onOpened={() => setOpened(true)}
+                  />
+                )}
+              </>
+            )}
+          </div>
+        )}
+
+        {opened && (
+          <div ref={successRef} className="mt-6">
+            <SuccessMessage />
+          </div>
+        )}
+
+        <div className="referral">
+          <span className="ic">
+            <Users aria-hidden="true" />
+          </span>
+          <div className="txt">
+            <h3>Refer &amp; earn 10% commission</h3>
+            <p>
+              Know a founder who&apos;d benefit from our work? Introduce them and earn a flat 10% of
+              their project value — a separate program, kept clear of review rewards.
+            </p>
+          </div>
+          <a href="#">Learn about referrals</a>
         </div>
+
+        <p className="disclosure">
+          We only ever ask for honest feedback. Public platforms that prohibit incentives carry no
+          reward. Where a thank-you applies, it&apos;s for sharing your experience, not for a rating
+          — and if a testimonial is ever incentivized, we&apos;ll ask you to note it, per FTC
+          guidelines.
+        </p>
       </div>
     </main>
   );
