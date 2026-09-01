@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import {
   Check,
   Coffee,
@@ -80,20 +80,9 @@ const TABS: { id: "all" | RewardCategory; label: string }[] = [
   { id: "other", label: "Other perks" },
 ];
 
-interface AdvocacyRewardsProps {
-  onRewardSelected?: () => void;
-}
-
-export function AdvocacyRewards({ onRewardSelected }: AdvocacyRewardsProps) {
+export function AdvocacyRewards() {
   const [tab, setTab] = useState<(typeof TABS)[number]["id"]>("all");
   const [reward, setReward] = useState<string | null>(null);
-  const wasSelected = useRef(false);
-
-  useEffect(() => {
-    const selected = reward !== null;
-    if (selected && !wasSelected.current) onRewardSelected?.();
-    wasSelected.current = selected;
-  }, [reward, onRewardSelected]);
 
   const rewardName = REWARDS.find((r) => r.id === reward)?.name;
   const visibleRewards = REWARDS.filter((r) => tab === "all" || r.category === tab);

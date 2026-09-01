@@ -56,7 +56,6 @@ function ReviewPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [opened, setOpened] = useState(false);
   const step2Ref = useRef<HTMLDivElement>(null);
-  const step3Ref = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const successRef = useRef<HTMLDivElement>(null);
 
@@ -204,11 +203,11 @@ function ReviewPage() {
             </span>
           </div>
 
-          <AdvocacyRewards onRewardSelected={() => scrollToSection(step3Ref)} />
+          <AdvocacyRewards />
         </section>
 
         {/* Step 5: write mode */}
-        <section className="panel" ref={step3Ref}>
+        <section className="panel">
           <div className="step-head">
             <span className="step-num">5</span>
             <div>
