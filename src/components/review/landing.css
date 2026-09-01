@@ -148,6 +148,16 @@
   font-size: 12.5px;
   color: var(--muted);
 }
+.vc-lp .field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 680px) {
+  .vc-lp .field-row {
+    grid-template-columns: 1fr;
+  }
+}
 
 .vc-lp .step-head .tag {
   display: inline-block;
@@ -365,45 +375,20 @@
   color: var(--ink);
   margin: 26px 0 12px;
 }
-.vc-lp .tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-.vc-lp .tab {
-  border: 1.5px solid var(--line);
-  background: var(--card);
-  color: var(--slate);
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 500;
-  padding: 7px 14px;
-  border-radius: 999px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-.vc-lp .tab:hover {
-  border-color: var(--line-strong);
-}
-.vc-lp .tab:focus-visible {
-  outline: 2px solid var(--blue);
-  outline-offset: 2px;
-}
-.vc-lp .tab.active {
-  background: var(--blue);
-  border-color: var(--blue);
-  color: #fff;
-}
-
 .vc-lp .rewards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
 }
+.vc-lp .reward:nth-child(4) {
+  grid-column: 2;
+}
 @media (max-width: 680px) {
   .vc-lp .rewards {
     grid-template-columns: repeat(2, 1fr);
+  }
+  .vc-lp .reward:nth-child(4) {
+    grid-column: auto;
   }
 }
 @media (max-width: 420px) {
@@ -463,6 +448,16 @@
   color: var(--muted);
   margin: 4px 0 10px;
   min-height: 28px;
+}
+.vc-lp .reward .rv {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--ink);
+  margin: 4px 0;
+}
+.vc-lp .reward .rv a {
+  color: var(--blue);
+  text-decoration: none;
 }
 .vc-lp .reward .val {
   display: inline-block;

@@ -53,7 +53,7 @@ export const platforms: Platform[] = [
     category: "Review Platforms",
     icon: "globe",
     reviewUrl: PLACEHOLDER,
-    active: true,
+    active: false,
   },
   {
     id: "upwork",
@@ -62,7 +62,7 @@ export const platforms: Platform[] = [
     category: "Marketplaces",
     icon: "briefcase",
     reviewUrl: PLACEHOLDER,
-    active: true,
+    active: false,
   },
   {
     id: "trustpilot",

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Clock, Heart, Info, Gift as GiftIcon, Users, Zap } from "lucide-react";
+import { Clock, Heart, Gift as GiftIcon, Users, Zap } from "lucide-react";
 import { getPlatform } from "@/config/platforms";
 import { generateReview, type ReviewAnswers } from "@/lib/review-api";
 import { PlatformTiles } from "@/components/review/PlatformTiles";
@@ -116,46 +116,37 @@ function ReviewPage() {
           </span>
         </div>
 
-        {/* Step 1: name */}
+        {/* Step 1: name + email */}
         <section className="panel">
           <div className="step-head">
             <span className="step-num">1</span>
             <div>
-              <h2>What&apos;s your name?</h2>
-              <p>So we know who to thank.</p>
+              <h2>Your name &amp; email</h2>
+              <p>So we know who to thank and where to send your thank-you.</p>
             </div>
           </div>
-          <input
-            type="text"
-            className="field"
-            placeholder="Jane Smith"
-            value={answers.name}
-            onChange={(e) => setAnswers({ ...answers, name: e.target.value })}
-          />
+          <div className="field-row">
+            <input
+              type="text"
+              className="field"
+              placeholder="Jane Smith"
+              value={answers.name}
+              onChange={(e) => setAnswers({ ...answers, name: e.target.value })}
+            />
+            <input
+              type="email"
+              className="field"
+              placeholder="jane@company.com"
+              value={answers.email}
+              onChange={(e) => setAnswers({ ...answers, email: e.target.value })}
+            />
+          </div>
         </section>
 
-        {/* Step 2: email */}
+        {/* Step 2: public review */}
         <section className="panel">
           <div className="step-head">
             <span className="step-num">2</span>
-            <div>
-              <h2>What&apos;s your email?</h2>
-              <p>So we know where to send your thank-you.</p>
-            </div>
-          </div>
-          <input
-            type="email"
-            className="field"
-            placeholder="jane@company.com"
-            value={answers.email}
-            onChange={(e) => setAnswers({ ...answers, email: e.target.value })}
-          />
-        </section>
-
-        {/* Step 3: public review */}
-        <section className="panel">
-          <div className="step-head">
-            <span className="step-num">3</span>
             <div>
               <h2>Where would you like to leave a review?</h2>
               <p>Pick a platform to continue.</p>
@@ -170,21 +161,12 @@ function ReviewPage() {
               scrollToSection(step2Ref);
             }}
           />
-
-          <div className="note">
-            <Info aria-hidden="true" />
-            <span>
-              No reward is attached to these reviews — the platforms don&apos;t allow it, and we
-              respect that. Just your honest take. (Thank-you gifts live in step 4, for advocacy you
-              share with us directly.)
-            </span>
-          </div>
         </section>
 
-        {/* Step 4: advocacy + reward */}
+        {/* Step 3: advocacy + reward */}
         <section className="panel" ref={step2Ref}>
           <div className="step-head">
-            <span className="step-num">4</span>
+            <span className="step-num">3</span>
             <div>
               <h2>
                 Go further &amp; pick a thank-you
@@ -203,13 +185,13 @@ function ReviewPage() {
             </span>
           </div>
 
-          <AdvocacyRewards />
+          <AdvocacyRewards key={platform?.id} platform={platform} />
         </section>
 
-        {/* Step 5: write mode */}
+        {/* Step 4: write mode */}
         <section className="panel">
           <div className="step-head">
-            <span className="step-num">5</span>
+            <span className="step-num">4</span>
             <div>
               <h2>How would you like to write it?</h2>
               <p>
@@ -286,12 +268,7 @@ function ReviewPage() {
           <a href="#">Learn about referrals</a>
         </div>
 
-        <p className="disclosure">
-          We only ever ask for honest feedback. Public platforms that prohibit incentives carry no
-          reward. Where a thank-you applies, it&apos;s for sharing your experience, not for a rating
-          — and if a testimonial is ever incentivized, we&apos;ll ask you to note it, per FTC
-          guidelines.
-        </p>
+        <p className="disclosure">We only ever ask for honest feedback.</p>
       </div>
     </main>
   );
