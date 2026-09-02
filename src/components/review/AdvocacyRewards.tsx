@@ -9,10 +9,17 @@ interface RewardCategory {
   Icon: LucideIcon;
   name: string;
   description: string;
+  popular?: boolean;
 }
 
 const REWARD_CATEGORIES: RewardCategory[] = [
-  { id: "gift", Icon: Gift, name: "Gift Card", description: "Your Reward, Your Choice" },
+  {
+    id: "gift",
+    Icon: Gift,
+    name: "Gift Card",
+    description: "Your Reward, Your Choice",
+    popular: true,
+  },
   { id: "credit", Icon: CreditCard, name: "Service Credits", description: "Credit toward future work with us." },
   {
     id: "charity",
@@ -48,8 +55,8 @@ export function AdvocacyRewards({ platform }: { platform: Platform | undefined }
   return (
     <>
       <p className="rlabel">Choose your thank-you</p>
-      <div className="rewards" role="radiogroup" aria-label="Thank-you reward">
-        {REWARD_CATEGORIES.map(({ id, Icon, name, description }) => (
+      <div className="rewards" role="group" aria-label="Thank-you reward">
+        {REWARD_CATEGORIES.map(({ id, Icon, name, description, popular }) => (
           <button
             key={id}
             type="button"
@@ -61,13 +68,13 @@ export function AdvocacyRewards({ platform }: { platform: Platform | undefined }
               <Check size={10} />
             </span>
             <span className="ic">
-              <Icon size={22} />
+              <Icon size={26} />
             </span>
             <div className="rn">{name}</div>
             <div className="rv">
               {id === "gift" && (
                 <>
-                  <strong>{values[id]}</strong> {name}
+                  <strong>{values[id]}</strong> Amazon Gift Card
                 </>
               )}
               {id === "credit" && (
@@ -102,6 +109,7 @@ export function AdvocacyRewards({ platform }: { platform: Platform | undefined }
                 })()}
             </div>
             <div className="rd">{description}</div>
+            {popular && <span className="popular">Most popular</span>}
           </button>
         ))}
       </div>

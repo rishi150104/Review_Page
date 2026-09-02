@@ -29,7 +29,7 @@ const options = [
 
 export function ReviewMethodSelector({ value, onChange, disabled }: ReviewMethodSelectorProps) {
   return (
-    <div className="modes" role="radiogroup" aria-label="Review method" aria-disabled={disabled}>
+    <div className="modes" role="group" aria-label="Review method" aria-disabled={disabled}>
       {options.map(({ id, title, description, Icon, recommended }) => (
         <button
           key={id}

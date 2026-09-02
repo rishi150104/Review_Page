@@ -126,20 +126,32 @@ function ReviewPage() {
             </div>
           </div>
           <div className="field-row">
-            <input
-              type="text"
-              className="field"
-              placeholder="Jane Smith"
-              value={answers.name}
-              onChange={(e) => setAnswers({ ...answers, name: e.target.value })}
-            />
-            <input
-              type="email"
-              className="field"
-              placeholder="jane@company.com"
-              value={answers.email}
-              onChange={(e) => setAnswers({ ...answers, email: e.target.value })}
-            />
+            <div>
+              <label htmlFor="review-name" className="sr-only">
+                Your name
+              </label>
+              <input
+                id="review-name"
+                type="text"
+                className="field"
+                placeholder="Jane Smith"
+                value={answers.name}
+                onChange={(e) => setAnswers({ ...answers, name: e.target.value })}
+              />
+            </div>
+            <div>
+              <label htmlFor="review-email" className="sr-only">
+                Your email
+              </label>
+              <input
+                id="review-email"
+                type="email"
+                className="field"
+                placeholder="jane@company.com"
+                value={answers.email}
+                onChange={(e) => setAnswers({ ...answers, email: e.target.value })}
+              />
+            </div>
           </div>
         </section>
 

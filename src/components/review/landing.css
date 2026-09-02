@@ -16,15 +16,58 @@
   --emerald-soft: #e7f6ef;
   --amber: #b45309;
   --amber-soft: #fdf3e6;
-  --lp-serif: "Playfair Display", Georgia, "Times New Roman", serif;
+  --lp-serif: "Fraunces", Georgia, "Times New Roman", serif;
   --lp-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --lp-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(15, 23, 42, 0.05);
 
   font-family: var(--lp-sans);
   color: var(--slate);
   background: var(--page);
+  background-image:
+    radial-gradient(circle, rgba(37, 99, 235, 0.12), transparent 65%),
+    radial-gradient(circle, rgba(59, 130, 246, 0.09), transparent 65%),
+    radial-gradient(circle, rgba(15, 23, 42, 0.07) 1px, transparent 1.5px);
+  background-repeat: no-repeat, no-repeat, repeat;
+  background-size: 700px 700px, 600px 600px, 22px 22px;
+  background-position:
+    -120px -160px,
+    110% -80px,
+    0 0;
+  animation: lp-glow-drift 26s ease-in-out infinite alternate;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+}
+@keyframes lp-glow-drift {
+  from {
+    background-position:
+      -120px -160px,
+      110% -80px,
+      0 0;
+    background-size:
+      700px 700px,
+      600px 600px,
+      22px 22px;
+  }
+  to {
+    background-position:
+      -60px -100px,
+      95% -40px,
+      0 0;
+    background-size:
+      780px 780px,
+      670px 670px,
+      22px 22px;
+  }
+}
+.vc-lp::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  background-size: 120px 120px;
 }
 
 .vc-lp .wrap {
@@ -214,10 +257,10 @@
   border-radius: 13px;
   padding: 28px 8px 24px;
   transition:
-    border-color 0.15s ease,
-    transform 0.15s ease,
-    background 0.15s ease,
-    box-shadow 0.15s ease;
+    border-color 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+    transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+    background 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
   display: block;
   width: 100%;
   font-family: inherit;
@@ -225,7 +268,8 @@
 }
 .vc-lp .pf:hover {
   border-color: var(--line-strong);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.1);
 }
 .vc-lp .pf:focus-visible {
   outline: 2px solid var(--blue);
@@ -234,16 +278,22 @@
 .vc-lp .pf[aria-pressed="true"] {
   border-color: var(--blue);
   background: var(--blue-soft);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
 }
 .vc-lp .pf .logo {
   width: 38px;
   height: 38px;
   margin: 0 auto 9px;
+  border-radius: 10px;
+  background: #f1f5fb;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #334155;
+  transition: background 0.15s ease;
+}
+.vc-lp .pf[aria-pressed="true"] .logo {
+  background: #dbe6ff;
 }
 .vc-lp .pf .pn {
   font-size: 12.5px;
@@ -390,13 +440,16 @@
   cursor: pointer;
   font-family: inherit;
   transition:
-    border-color 0.15s ease,
-    background 0.15s ease,
-    box-shadow 0.15s ease;
+    border-color 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+    transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+    background 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
   width: 100%;
 }
 .vc-lp .reward:hover {
   border-color: var(--line-strong);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.1);
 }
 .vc-lp .reward:focus-visible {
   outline: 2px solid var(--blue);
@@ -405,21 +458,25 @@
 .vc-lp .reward[aria-pressed="true"] {
   border-color: var(--blue);
   background: var(--blue-soft);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
 }
 .vc-lp .reward.dimmed {
   opacity: 0.5;
 }
 .vc-lp .reward .ic {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   margin: 0 auto 10px;
+  border-radius: 10px;
+  background: #f1f5fb;
   color: #334155;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background 0.15s ease;
 }
 .vc-lp .reward[aria-pressed="true"] .ic {
+  background: #dbe6ff;
   color: var(--blue-strong);
 }
 .vc-lp .reward .rn {
@@ -433,8 +490,17 @@
   margin: 4px 0 10px;
   min-height: 28px;
 }
+.vc-lp .reward .popular {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--amber);
+  background: var(--amber-soft);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
 .vc-lp .reward .rv {
-  font-size: 12px;
+  font-size: 13.5px;
   font-weight: 400;
   color: var(--ink);
   margin: 4px 0;
@@ -484,6 +550,17 @@
 }
 .vc-lp .confirm.show {
   display: block;
+  animation: confirm-in 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@keyframes confirm-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* Write modes */
@@ -506,13 +583,16 @@
   cursor: pointer;
   font-family: inherit;
   transition:
-    border-color 0.15s ease,
-    background 0.15s ease,
-    box-shadow 0.15s ease;
+    border-color 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+    transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+    background 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
   width: 100%;
 }
-.vc-lp .mode:hover {
+.vc-lp .mode:hover:not(:disabled) {
   border-color: var(--line-strong);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.1);
 }
 .vc-lp .mode:focus-visible {
   outline: 2px solid var(--blue);
@@ -521,7 +601,7 @@
 .vc-lp .mode[aria-pressed="true"] {
   border-color: var(--blue);
   background: var(--blue-soft);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
 }
 .vc-lp .mode:disabled {
   cursor: not-allowed;
@@ -637,7 +717,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .vc-lp,
   .vc-lp * {
     transition: none !important;
+    animation: none !important;
   }
 }

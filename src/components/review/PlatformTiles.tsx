@@ -27,7 +27,7 @@ interface PlatformTilesProps {
 
 export function PlatformTiles({ value, onChange }: PlatformTilesProps) {
   return (
-    <div className="platforms" role="radiogroup" aria-label="Review platform">
+    <div className="platforms" role="group" aria-label="Review platform">
       {activePlatforms().map((platform) => {
         const Logo = PLATFORM_LOGOS[platform.id];
         const Icon = ICONS[platform.icon] ?? Star;
