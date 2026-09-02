@@ -7,6 +7,7 @@ interface PlatformReviewButtonProps {
   onOpened?: () => void;
   variant?: "default" | "outline";
   className?: string;
+  disabled?: boolean;
 }
 
 export function PlatformReviewButton({
@@ -14,7 +15,20 @@ export function PlatformReviewButton({
   onOpened,
   variant = "default",
   className,
+  disabled,
 }: PlatformReviewButtonProps) {
+  const label =
+    platform.id === "video-testimonial" ? `Leave ${platform.name}` : `Leave Review on ${platform.name}`;
+
+  if (disabled) {
+    return (
+      <Button size="lg" variant={variant} className={className} disabled>
+        {label}
+        <ExternalLink className="size-4" aria-hidden="true" />
+      </Button>
+    );
+  }
+
   return (
     <Button asChild size="lg" variant={variant} className={className}>
       <a
@@ -23,7 +37,7 @@ export function PlatformReviewButton({
         rel="noopener noreferrer"
         onClick={() => onOpened?.()}
       >
-        Leave Review on {platform.name}
+        {label}
         <ExternalLink className="size-4" aria-hidden="true" />
       </a>
     </Button>

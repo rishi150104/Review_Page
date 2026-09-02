@@ -104,8 +104,9 @@ interface ReviewQuestionnaireProps {
   onAnswersChange: (answers: ReviewAnswers) => void;
   onSubmit: () => void;
   onBackToStart: () => void;
-  /** False when the name/email fields above haven't been filled in yet. */
+  /** False when the name/email fields or the reward above haven't been filled in yet. */
   canSubmit: boolean;
+  canSubmitReason: string;
 }
 
 export function ReviewQuestionnaire({
@@ -114,6 +115,7 @@ export function ReviewQuestionnaire({
   onSubmit,
   onBackToStart,
   canSubmit,
+  canSubmitReason,
 }: ReviewQuestionnaireProps) {
   const [step, setStep] = useState(0);
   const total = questions.length;
@@ -184,9 +186,7 @@ export function ReviewQuestionnaire({
         </Button>
       </div>
       {isLast && !canSubmit && (
-        <p className="mt-3 text-right text-sm text-muted-foreground">
-          Add your name and email above (steps 1 &amp; 2) to generate your review.
-        </p>
+        <p className="mt-3 text-right text-sm text-muted-foreground">{canSubmitReason}</p>
       )}
     </section>
   );

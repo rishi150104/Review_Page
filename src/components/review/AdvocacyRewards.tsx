@@ -1,25 +1,17 @@
-import { useState } from "react";
 import { Check, CreditCard, Gift, HeartHandshake, Link2, type LucideIcon } from "lucide-react";
 import type { Platform } from "@/config/platforms";
 
-type RewardCategoryId = "gift" | "credit" | "charity" | "backlink";
+export type RewardCategoryId = "gift" | "credit" | "charity" | "backlink";
 
 interface RewardCategory {
   id: RewardCategoryId;
   Icon: LucideIcon;
   name: string;
   description: string;
-  popular?: boolean;
 }
 
 const REWARD_CATEGORIES: RewardCategory[] = [
-  {
-    id: "gift",
-    Icon: Gift,
-    name: "Gift Card",
-    description: "Your Reward, Your Choice",
-    popular: true,
-  },
+  { id: "gift", Icon: Gift, name: "Gift Card", description: "Your Reward, Your Choice" },
   { id: "credit", Icon: CreditCard, name: "Service Credits", description: "Credit toward future work with us." },
   {
     id: "charity",
@@ -37,9 +29,13 @@ const REWARD_VALUES: Record<string, Record<RewardCategoryId, string>> = {
   trustpilot: { gift: "30 USD", credit: "50 USD", charity: "80 USD", backlink: "25+ DR — worth 150 USD" },
 };
 
-export function AdvocacyRewards({ platform }: { platform: Platform | undefined }) {
-  const [reward, setReward] = useState<RewardCategoryId | null>(null);
+interface AdvocacyRewardsProps {
+  platform: Platform | undefined;
+  value: RewardCategoryId | null;
+  onChange: (reward: RewardCategoryId | null) => void;
+}
 
+export function AdvocacyRewards({ platform, value: reward, onChange }: AdvocacyRewardsProps) {
   const values = platform ? REWARD_VALUES[platform.id] : undefined;
   const rewardName = REWARD_CATEGORIES.find((r) => r.id === reward)?.name;
 
@@ -56,13 +52,13 @@ export function AdvocacyRewards({ platform }: { platform: Platform | undefined }
     <>
       <p className="rlabel">Choose your thank-you</p>
       <div className="rewards" role="group" aria-label="Thank-you reward">
-        {REWARD_CATEGORIES.map(({ id, Icon, name, description, popular }) => (
+        {REWARD_CATEGORIES.map(({ id, Icon, name, description }) => (
           <button
             key={id}
             type="button"
             className={`reward${reward !== null && reward !== id ? " dimmed" : ""}`}
             aria-pressed={reward === id}
-            onClick={() => setReward((current) => (current === id ? null : id))}
+            onClick={() => onChange(reward === id ? null : id)}
           >
             <span className="check">
               <Check size={10} />
@@ -109,7 +105,6 @@ export function AdvocacyRewards({ platform }: { platform: Platform | undefined }
                 })()}
             </div>
             <div className="rd">{description}</div>
-            {popular && <span className="popular">Most popular</span>}
           </button>
         ))}
       </div>

@@ -4,7 +4,7 @@ import { Clock, Heart, Gift as GiftIcon, Users, Zap } from "lucide-react";
 import { getPlatform } from "@/config/platforms";
 import { generateReview, type ReviewAnswers } from "@/lib/review-api";
 import { PlatformTiles } from "@/components/review/PlatformTiles";
-import { AdvocacyRewards } from "@/components/review/AdvocacyRewards";
+import { AdvocacyRewards, type RewardCategoryId } from "@/components/review/AdvocacyRewards";
 import { ReviewMethodSelector, type ReviewMethod } from "@/components/review/ReviewMethodSelector";
 import { ReviewQuestionnaire, emptyAnswers } from "@/components/review/ReviewQuestionnaire";
 import { ReviewError, ReviewLoading } from "@/components/review/ReviewGenerator";
@@ -49,6 +49,7 @@ function scrollToSection(ref: RefObject<HTMLDivElement | null>) {
 
 function ReviewPage() {
   const [platformId, setPlatformId] = useState<string | null>(null);
+  const [reward, setReward] = useState<RewardCategoryId | null>(null);
   const [method, setMethod] = useState<ReviewMethod | null>(null);
   const [answers, setAnswers] = useState<ReviewAnswers>(emptyAnswers);
   const [status, setStatus] = useState<Status>("idle");
@@ -60,7 +61,11 @@ function ReviewPage() {
   const successRef = useRef<HTMLDivElement>(null);
 
   const platform = getPlatform(platformId);
-  const canGenerate = answers.name.trim() !== "" && EMAIL_PATTERN.test(answers.email.trim());
+  const canGenerate =
+    reward !== null && answers.name.trim() !== "" && EMAIL_PATTERN.test(answers.email.trim());
+  const canGenerateReason = !reward
+    ? "Pick a thank-you in step 3 above to continue."
+    : "Add your name and email above (step 1) to continue.";
 
   useEffect(() => {
     if (method) scrollToSection(contentRef);
@@ -169,6 +174,7 @@ function ReviewPage() {
             value={platformId}
             onChange={(next) => {
               setPlatformId(next.id);
+              setReward(null);
               resetMethod();
               scrollToSection(step2Ref);
             }}
@@ -197,7 +203,7 @@ function ReviewPage() {
             </span>
           </div>
 
-          <AdvocacyRewards key={platform?.id} platform={platform} />
+          <AdvocacyRewards key={platform?.id} platform={platform} value={reward} onChange={setReward} />
         </section>
 
         {/* Step 4: write mode */}
@@ -207,15 +213,17 @@ function ReviewPage() {
             <div>
               <h2>How would you like to write it?</h2>
               <p>
-                {platform
-                  ? "We'll make it as easy as possible."
-                  : "Pick a platform in step 3 first."}
+                {!platform
+                  ? "Pick a platform in step 2 first."
+                  : !reward
+                    ? "Pick a thank-you in step 3 first."
+                    : "We'll make it as easy as possible."}
               </p>
             </div>
           </div>
           <ReviewMethodSelector
             value={method}
-            disabled={!platform}
+            disabled={!platform || !reward}
             onChange={(next) => {
               setMethod(next);
               setStatus("idle");
@@ -229,7 +237,12 @@ function ReviewPage() {
         {platform && method && (
           <div ref={contentRef} className="mt-6">
             {method === "self" && (
-              <SelfWriteCard platform={platform} onOpened={() => setOpened(true)} />
+              <SelfWriteCard
+                platform={platform}
+                onOpened={() => setOpened(true)}
+                disabled={!canGenerate}
+                disabledReason={canGenerateReason}
+              />
             )}
 
             {method === "assisted" && (
@@ -241,6 +254,7 @@ function ReviewPage() {
                     onSubmit={handleGenerate}
                     onBackToStart={resetMethod}
                     canSubmit={canGenerate}
+                    canSubmitReason={canGenerateReason}
                   />
                 )}
                 {status === "loading" && <ReviewLoading />}

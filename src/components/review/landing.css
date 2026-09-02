@@ -490,15 +490,6 @@
   margin: 4px 0 10px;
   min-height: 28px;
 }
-.vc-lp .reward .popular {
-  display: inline-block;
-  font-size: 10.5px;
-  font-weight: 600;
-  color: var(--amber);
-  background: var(--amber-soft);
-  padding: 2px 8px;
-  border-radius: 999px;
-}
 .vc-lp .reward .rv {
   font-size: 13.5px;
   font-weight: 400;
