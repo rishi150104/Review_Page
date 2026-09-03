@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Reveal } from "@/components/refer/Reveal";
 import { useReveal } from "@/components/refer/useReveal";
+import { submitReferral } from "@/lib/referral-api";
 import "@/components/refer/referral.css";
 
 const title = "Refer & Earn — ViralChilly";
@@ -218,6 +219,8 @@ function FaqItem({ item, index }: { item: (typeof FAQ_ITEMS)[number]; index: num
 function ReferPage() {
   const [submitted, setSubmitted] = useState(false);
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [status, setStatus] = useState<"idle" | "loading">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const toggleService = (id: string) => {
     setSelectedServices((current) =>
@@ -225,11 +228,33 @@ function ReferPage() {
     );
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (selectedServices.length === 0) return;
-    setSubmitted(true);
-    window.setTimeout(() => setSubmitted(false), 3000);
+    if (selectedServices.length === 0 || status === "loading") return;
+
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    setStatus("loading");
+    setErrorMessage("");
+    try {
+      await submitReferral({
+        yourName: String(data.get("yourName") ?? ""),
+        yourEmail: String(data.get("yourEmail") ?? ""),
+        referralName: String(data.get("referralName") ?? ""),
+        referralEmail: String(data.get("referralEmail") ?? ""),
+        company: String(data.get("company") ?? ""),
+        services: selectedServices,
+        message: String(data.get("message") ?? ""),
+      });
+      form.reset();
+      setSelectedServices([]);
+      setSubmitted(true);
+      window.setTimeout(() => setSubmitted(false), 3000);
+    } catch (err) {
+      setErrorMessage(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+    } finally {
+      setStatus("idle");
+    }
   };
 
   return (
@@ -470,28 +495,46 @@ function ReferPage() {
               <div className="field-row">
                 <div className="field">
                   <label htmlFor="yourName">Your name</label>
-                  <input id="yourName" type="text" placeholder="Jane Smith" required />
+                  <input id="yourName" name="yourName" type="text" placeholder="Jane Smith" required />
                 </div>
                 <div className="field">
                   <label htmlFor="yourEmail">Your email</label>
-                  <input id="yourEmail" type="email" placeholder="jane@example.com" required />
+                  <input
+                    id="yourEmail"
+                    name="yourEmail"
+                    type="email"
+                    placeholder="jane@example.com"
+                    required
+                  />
                 </div>
               </div>
 
               <div className="field-row">
                 <div className="field">
                   <label htmlFor="referralName">Referral's name</label>
-                  <input id="referralName" type="text" placeholder="Alex Morgan" required />
+                  <input
+                    id="referralName"
+                    name="referralName"
+                    type="text"
+                    placeholder="Alex Morgan"
+                    required
+                  />
                 </div>
                 <div className="field">
                   <label htmlFor="referralEmail">Their email</label>
-                  <input id="referralEmail" type="email" placeholder="alex@company.com" required />
+                  <input
+                    id="referralEmail"
+                    name="referralEmail"
+                    type="email"
+                    placeholder="alex@company.com"
+                    required
+                  />
                 </div>
               </div>
 
               <div className="field">
                 <label htmlFor="company">Company / website</label>
-                <input id="company" type="text" placeholder="company.com" required />
+                <input id="company" name="company" type="text" placeholder="company.com" required />
               </div>
 
               <div className="field">
@@ -524,6 +567,7 @@ function ReferPage() {
                 <label htmlFor="message">Why do you think we'd be a good fit?</label>
                 <textarea
                   id="message"
+                  name="message"
                   placeholder="Give us a little context about the person, their business and what they're looking for..."
                 />
               </div>
@@ -531,11 +575,17 @@ function ReferPage() {
               <button
                 type="submit"
                 className="button button-primary submit"
-                disabled={submitted || selectedServices.length === 0}
+                disabled={submitted || status === "loading" || selectedServices.length === 0}
                 style={submitted ? { background: "#1d4ed8" } : undefined}
               >
-                {submitted ? "Introduction received ✓" : "Submit introduction →"}
+                {submitted
+                  ? "Introduction received ✓"
+                  : status === "loading"
+                    ? "Submitting…"
+                    : "Submit introduction →"}
               </button>
+
+              {errorMessage && <p className="privacy-note" style={{ color: "#dc2626" }}>{errorMessage}</p>}
 
               <p className="privacy-note">
                 Please make sure you have permission to share the person's contact information with

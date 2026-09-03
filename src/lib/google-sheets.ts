@@ -1,79 +1,41 @@
-import { createSign } from "node:crypto";
-
 /**
- * Appends a row to a Google Sheet using a service account, with no SDK
- * dependency: a hand-built JWT (Node's built-in crypto covers RS256 signing)
- * exchanged for an OAuth token, then a plain REST call to the Sheets API.
+ * Appends a row to a Google Sheet via a Google Apps Script Web App bound to
+ * that sheet — no service account, no GCP project, no Sheets API to enable.
  *
  * Setup:
- * 1. Google Cloud Console -> create a project -> enable the "Google Sheets API".
- * 2. Create a service account, add a JSON key, and read `client_email` /
- *    `private_key` from it.
- * 3. Share the target Google Sheet with that `client_email` as an Editor.
- * 4. Set env vars: GOOGLE_SHEETS_CLIENT_EMAIL, GOOGLE_SHEETS_PRIVATE_KEY
- *    (paste the JSON key's private_key value as-is, "\n" and all), and
- *    GOOGLE_SHEETS_SPREADSHEET_ID (the id from the sheet's URL).
+ * 1. Open the target Google Sheet -> Extensions -> Apps Script.
+ * 2. Replace the editor content with the doPost script documented in
+ *    GOOGLE_APPS_SCRIPT.md (repo root), then Deploy -> New deployment ->
+ *    type "Web app", execute as "Me", who has access "Anyone".
+ * 3. Copy the deployment's /exec URL into GOOGLE_APPS_SCRIPT_URL.
  */
 
-const TOKEN_URL = "https://oauth2.googleapis.com/token";
-const SCOPE = "https://www.googleapis.com/auth/spreadsheets";
-
-function base64url(input: Buffer | string) {
-  return Buffer.from(input).toString("base64url");
-}
-
-async function getAccessToken(clientEmail: string, privateKey: string) {
-  const now = Math.floor(Date.now() / 1000);
-  const header = base64url(JSON.stringify({ alg: "RS256", typ: "JWT" }));
-  const claims = base64url(
-    JSON.stringify({
-      iss: clientEmail,
-      scope: SCOPE,
-      aud: TOKEN_URL,
-      iat: now,
-      exp: now + 3600,
-    }),
-  );
-  const signingInput = `${header}.${claims}`;
-  const signature = base64url(
-    createSign("RSA-SHA256").update(signingInput).sign(privateKey.replace(/\\n/g, "\n")),
-  );
-  const jwt = `${signingInput}.${signature}`;
-
-  const res = await fetch(TOKEN_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({
-      grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
-      assertion: jwt,
-    }),
-  });
-  if (!res.ok) throw new Error(`Google token exchange failed: ${res.status}`);
-  const data = (await res.json()) as { access_token: string };
-  return data.access_token;
-}
-
-/** No-ops (and logs why) when the Sheets env vars aren't configured, so local dev without them still works. */
-export async function appendSubmissionRow(row: (string | number)[]): Promise<void> {
-  const clientEmail = process.env["GOOGLE_SHEETS_CLIENT_EMAIL"];
-  const privateKey = process.env["GOOGLE_SHEETS_PRIVATE_KEY"];
-  const spreadsheetId = process.env["GOOGLE_SHEETS_SPREADSHEET_ID"];
-  const range = process.env["GOOGLE_SHEETS_RANGE"] || "Sheet1!A1";
-
-  if (!clientEmail || !privateKey || !spreadsheetId) {
-    console.warn("Google Sheets logging skipped: env vars not configured.");
+/**
+ * No-ops (and logs why) when GOOGLE_APPS_SCRIPT_URL isn't configured, so
+ * local dev without it still works. `range` is kept in "SheetName!A1" shape
+ * for compatibility with existing env vars (GOOGLE_SHEETS_RANGE,
+ * GOOGLE_SHEETS_REFERRAL_RANGE) — only the sheet-name part before "!" is
+ * used, since Apps Script's appendRow always targets the next empty row.
+ */
+export async function appendSubmissionRow(
+  row: (string | number)[],
+  range = process.env["GOOGLE_SHEETS_RANGE"] || "Sheet1!A1",
+): Promise<void> {
+  const scriptUrl = process.env["GOOGLE_APPS_SCRIPT_URL"];
+  if (!scriptUrl) {
+    console.warn("Google Sheets logging skipped: GOOGLE_APPS_SCRIPT_URL not configured.");
     return;
   }
 
-  const accessToken = await getAccessToken(clientEmail, privateKey);
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED`;
-  const res = await fetch(url, {
+  const sheetName = range.split("!")[0];
+  const res = await fetch(scriptUrl, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ values: [row] }),
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({ sheet: sheetName, row }),
+    redirect: "follow",
   });
-  if (!res.ok) throw new Error(`Sheets append failed: ${res.status} ${await res.text()}`);
+  if (!res.ok) throw new Error(`Apps Script append failed: ${res.status} ${await res.text()}`);
+
+  const data = (await res.json().catch(() => null)) as { ok?: boolean; error?: string } | null;
+  if (!data?.ok) throw new Error(`Apps Script append failed: ${data?.error || "unknown error"}`);
 }
