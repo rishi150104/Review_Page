@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
-import { appendSubmissionRow } from "@/lib/google-sheets";
+import { logReviewSubmission } from "@/lib/submission-log";
 
 /**
  * Backend endpoint for review generation.
@@ -10,6 +10,7 @@ import { appendSubmissionRow } from "@/lib/google-sheets";
 
 const bodySchema = z.object({
   platform: z.string().min(1),
+  reward: z.string().default(""),
   answers: z.object({
     name: z.string().default(""),
     email: z.string().default(""),
@@ -48,7 +49,7 @@ export const Route = createFileRoute("/api/generate-review")({
           return Response.json({ error: "Invalid request body." }, { status: 400 });
         }
 
-        const { platform, answers } = parsed;
+        const { platform, reward, answers } = parsed;
         const fields = [
           ["Service worked on", answers.service],
           ["Goal or challenge", answers.goal],
@@ -97,18 +98,19 @@ export const Route = createFileRoute("/api/generate-review")({
           }
 
           try {
-            await appendSubmissionRow([
-              new Date().toISOString(),
-              answers.name,
-              answers.email,
+            await logReviewSubmission({
+              name: answers.name,
+              email: answers.email,
               platform,
-              answers.service,
-              answers.goal,
-              answers.experience,
-              answers.likedMost,
-              answers.results,
+              reward,
+              method: "assisted",
+              service: answers.service,
+              goal: answers.goal,
+              experience: answers.experience,
+              likedMost: answers.likedMost,
+              results: answers.results,
               review,
-            ]);
+            });
           } catch (err) {
             // Logging the submission is best-effort — never fail the request over it.
             console.error("Google Sheets logging failed:", err);

@@ -18,6 +18,7 @@ export interface ReviewAnswers {
 
 export interface GenerateReviewRequest {
   platform: string;
+  reward: string;
   answers: ReviewAnswers;
 }
 

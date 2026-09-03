@@ -1,5 +1,6 @@
 import { Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { logSubmission } from "@/lib/log-submission";
 import {
   Dialog,
   DialogTrigger,
@@ -10,6 +11,10 @@ import {
 } from "@/components/ui/dialog";
 
 interface VideoTestimonialCardProps {
+  name: string;
+  email: string;
+  platformId: string;
+  reward: string;
   disabled?: boolean;
   disabledReason?: string;
 }
@@ -17,6 +22,10 @@ interface VideoTestimonialCardProps {
 const SUBMISSION_EMAIL = "prince@viralchilly.com";
 
 export function VideoTestimonialCard({
+  name,
+  email,
+  platformId,
+  reward,
   disabled = false,
   disabledReason = "Add your name and email above (step 1) to continue.",
 }: VideoTestimonialCardProps) {
@@ -31,7 +40,12 @@ export function VideoTestimonialCard({
 
       <Dialog>
         <DialogTrigger asChild>
-          <Button size="lg" className="mt-6 h-12 w-full sm:w-auto" disabled={disabled}>
+          <Button
+            size="lg"
+            className="mt-6 h-12 w-full sm:w-auto"
+            disabled={disabled}
+            onClick={() => logSubmission({ name, email, platform: platformId, reward, method: "video" })}
+          >
             <Video className="size-4" aria-hidden="true" />
             Submit Video Testimonial
           </Button>

@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ReferRouteImport } from './routes/refer'
 import { Route as ReviewRouteImport } from './routes/review'
 import { Route as ApiGenerateReviewRouteImport } from './routes/api/generate-review'
+import { Route as ApiLogSubmissionRouteImport } from './routes/api/log-submission'
 import { Route as ApiSubmitReferralRouteImport } from './routes/api/submit-referral'
 
 const IndexRoute = IndexRouteImport.update({
@@ -35,6 +36,11 @@ const ApiGenerateReviewRoute = ApiGenerateReviewRouteImport.update({
   path: '/api/generate-review',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiLogSubmissionRoute = ApiLogSubmissionRouteImport.update({
+  id: '/api/log-submission',
+  path: '/api/log-submission',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiSubmitReferralRoute = ApiSubmitReferralRouteImport.update({
   id: '/api/submit-referral',
   path: '/api/submit-referral',
@@ -46,6 +52,7 @@ export interface FileRoutesByFullPath {
   '/refer': typeof ReferRoute
   '/review': typeof ReviewRoute
   '/api/generate-review': typeof ApiGenerateReviewRoute
+  '/api/log-submission': typeof ApiLogSubmissionRoute
   '/api/submit-referral': typeof ApiSubmitReferralRoute
 }
 export interface FileRoutesByTo {
@@ -53,6 +60,7 @@ export interface FileRoutesByTo {
   '/refer': typeof ReferRoute
   '/review': typeof ReviewRoute
   '/api/generate-review': typeof ApiGenerateReviewRoute
+  '/api/log-submission': typeof ApiLogSubmissionRoute
   '/api/submit-referral': typeof ApiSubmitReferralRoute
 }
 export interface FileRoutesById {
@@ -61,21 +69,33 @@ export interface FileRoutesById {
   '/refer': typeof ReferRoute
   '/review': typeof ReviewRoute
   '/api/generate-review': typeof ApiGenerateReviewRoute
+  '/api/log-submission': typeof ApiLogSubmissionRoute
   '/api/submit-referral': typeof ApiSubmitReferralRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/refer' | '/review' | '/api/generate-review' | '/api/submit-referral'
+    | '/'
+    | '/refer'
+    | '/review'
+    | '/api/generate-review'
+    | '/api/log-submission'
+    | '/api/submit-referral'
   fileRoutesByTo: FileRoutesByTo
   to:
-    '/' | '/refer' | '/review' | '/api/generate-review' | '/api/submit-referral'
+    | '/'
+    | '/refer'
+    | '/review'
+    | '/api/generate-review'
+    | '/api/log-submission'
+    | '/api/submit-referral'
   id:
     | '__root__'
     | '/'
     | '/refer'
     | '/review'
     | '/api/generate-review'
+    | '/api/log-submission'
     | '/api/submit-referral'
   fileRoutesById: FileRoutesById
 }
@@ -84,6 +104,7 @@ export interface RootRouteChildren {
   ReferRoute: typeof ReferRoute
   ReviewRoute: typeof ReviewRoute
   ApiGenerateReviewRoute: typeof ApiGenerateReviewRoute
+  ApiLogSubmissionRoute: typeof ApiLogSubmissionRoute
   ApiSubmitReferralRoute: typeof ApiSubmitReferralRoute
 }
 
@@ -117,6 +138,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiGenerateReviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/log-submission': {
+      id: '/api/log-submission'
+      path: '/api/log-submission'
+      fullPath: '/api/log-submission'
+      preLoaderRoute: typeof ApiLogSubmissionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/submit-referral': {
       id: '/api/submit-referral'
       path: '/api/submit-referral'
@@ -132,6 +160,7 @@ const rootRouteChildren: RootRouteChildren = {
   ReferRoute: ReferRoute,
   ReviewRoute: ReviewRoute,
   ApiGenerateReviewRoute: ApiGenerateReviewRoute,
+  ApiLogSubmissionRoute: ApiLogSubmissionRoute,
   ApiSubmitReferralRoute: ApiSubmitReferralRoute,
 }
 export const routeTree = rootRouteImport

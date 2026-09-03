@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Clock, Heart, Gift as GiftIcon, Users, Zap } from "lucide-react";
 import { getPlatform } from "@/config/platforms";
 import { generateReview, type ReviewAnswers } from "@/lib/review-api";
+import { logSubmission } from "@/lib/log-submission";
 import { PlatformTiles } from "@/components/review/PlatformTiles";
 import { AdvocacyRewards, type RewardCategoryId } from "@/components/review/AdvocacyRewards";
 import { ReviewMethodSelector, type ReviewMethod } from "@/components/review/ReviewMethodSelector";
@@ -93,7 +94,7 @@ function ReviewPage() {
     if (!platform || status === "loading") return;
     setStatus("loading");
     try {
-      const text = await generateReview({ platform: platform.id, answers });
+      const text = await generateReview({ platform: platform.id, reward: reward ?? "", answers });
       setReview(text);
       setStatus("done");
     } catch (err) {
@@ -245,7 +246,14 @@ function ReviewPage() {
 
         {platform && isVideoTestimonial && (
           <div ref={contentRef} className="mt-6">
-            <VideoTestimonialCard disabled={!canGenerate} disabledReason={canGenerateReason} />
+            <VideoTestimonialCard
+              name={answers.name}
+              email={answers.email}
+              platformId={platform.id}
+              reward={reward ?? ""}
+              disabled={!canGenerate}
+              disabledReason={canGenerateReason}
+            />
           </div>
         )}
 
@@ -254,7 +262,16 @@ function ReviewPage() {
             {method === "self" && (
               <SelfWriteCard
                 platform={platform}
-                onOpened={() => setOpened(true)}
+                onOpened={() => {
+                  setOpened(true);
+                  logSubmission({
+                    name: answers.name,
+                    email: answers.email,
+                    platform: platform.id,
+                    reward: reward ?? "",
+                    method: "self",
+                  });
+                }}
                 disabled={!canGenerate}
                 disabledReason={canGenerateReason}
               />
