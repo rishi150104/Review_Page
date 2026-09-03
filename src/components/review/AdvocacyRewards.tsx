@@ -12,21 +12,51 @@ interface RewardCategory {
 
 const REWARD_CATEGORIES: RewardCategory[] = [
   { id: "gift", Icon: Gift, name: "Gift Card", description: "Your Reward, Your Choice" },
-  { id: "credit", Icon: CreditCard, name: "Service Credits", description: "Credit toward future work with us." },
+  {
+    id: "credit",
+    Icon: CreditCard,
+    name: "Service Credits",
+    description: "Credits for our services.",
+  },
   {
     id: "charity",
     Icon: HeartHandshake,
     name: "Charity Card",
     description: "Give a Child the Gift of Education",
   },
-  { id: "backlink", Icon: Link2, name: "Guest Post Backlink", description: "A backlink placement on a relevant blog." },
+  {
+    id: "backlink",
+    Icon: Link2,
+    name: "Guest Post Backlink",
+    description: "A backlink placement on a relevant blog.",
+  },
 ];
 
 const REWARD_VALUES: Record<string, Record<RewardCategoryId, string>> = {
-  "video-testimonial": { gift: "80 USD", credit: "200 USD", charity: "80 USD", backlink: "50+ DR — worth 250 USD" },
-  clutch: { gift: "80 USD", credit: "150 USD", charity: "80 USD", backlink: "40+ DR — worth 250 USD" },
-  linkedin: { gift: "50 USD", credit: "100 USD", charity: "80 USD", backlink: "30+ DR — worth 200 USD" },
-  trustpilot: { gift: "30 USD", credit: "50 USD", charity: "80 USD", backlink: "25+ DR — worth 150 USD" },
+  "video-testimonial": {
+    gift: "80 USD",
+    credit: "200 USD",
+    charity: "80 USD",
+    backlink: "50+ DR — worth 250 USD",
+  },
+  clutch: {
+    gift: "80 USD",
+    credit: "150 USD",
+    charity: "80 USD",
+    backlink: "40+ DR — worth 250 USD",
+  },
+  linkedin: {
+    gift: "50 USD",
+    credit: "100 USD",
+    charity: "80 USD",
+    backlink: "30+ DR — worth 200 USD",
+  },
+  trustpilot: {
+    gift: "30 USD",
+    credit: "50 USD",
+    charity: "80 USD",
+    backlink: "25+ DR — worth 150 USD",
+  },
 };
 
 interface AdvocacyRewardsProps {

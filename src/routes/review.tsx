@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type RefObject } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Clock, Heart, Gift as GiftIcon, Users, Zap } from "lucide-react";
 import { getPlatform } from "@/config/platforms";
 import { generateReview, type ReviewAnswers } from "@/lib/review-api";
@@ -10,6 +10,7 @@ import { ReviewQuestionnaire, emptyAnswers } from "@/components/review/ReviewQue
 import { ReviewError, ReviewLoading } from "@/components/review/ReviewGenerator";
 import { GeneratedReview } from "@/components/review/GeneratedReview";
 import { SelfWriteCard } from "@/components/review/SelfWriteCard";
+import { VideoTestimonialCard } from "@/components/review/VideoTestimonialCard";
 import { SuccessMessage } from "@/components/review/SuccessMessage";
 import "@/components/review/landing.css";
 
@@ -61,6 +62,7 @@ function ReviewPage() {
   const successRef = useRef<HTMLDivElement>(null);
 
   const platform = getPlatform(platformId);
+  const isVideoTestimonial = platform?.id === "video-testimonial";
   const canGenerate =
     reward !== null && answers.name.trim() !== "" && EMAIL_PATTERN.test(answers.email.trim());
   const canGenerateReason = !reward
@@ -203,36 +205,49 @@ function ReviewPage() {
             </span>
           </div>
 
-          <AdvocacyRewards key={platform?.id} platform={platform} value={reward} onChange={setReward} />
+          <AdvocacyRewards
+            key={platform?.id}
+            platform={platform}
+            value={reward}
+            onChange={setReward}
+          />
         </section>
 
         {/* Step 4: write mode */}
-        <section className="panel">
-          <div className="step-head">
-            <span className="step-num">4</span>
-            <div>
-              <h2>How would you like to write it?</h2>
-              <p>
-                {!platform
-                  ? "Pick a platform in step 2 first."
-                  : !reward
-                    ? "Pick a thank-you in step 3 first."
-                    : "We'll make it as easy as possible."}
-              </p>
+        {!isVideoTestimonial && (
+          <section className="panel">
+            <div className="step-head">
+              <span className="step-num">4</span>
+              <div>
+                <h2>How would you like to write it?</h2>
+                <p>
+                  {!platform
+                    ? "Pick a platform in step 2 first."
+                    : !reward
+                      ? "Pick a thank-you in step 3 first."
+                      : "We'll make it as easy as possible."}
+                </p>
+              </div>
             </div>
+            <ReviewMethodSelector
+              value={method}
+              disabled={!platform || !reward}
+              onChange={(next) => {
+                setMethod(next);
+                setStatus("idle");
+                setReview("");
+                setErrorMessage("");
+                setOpened(false);
+              }}
+            />
+          </section>
+        )}
+
+        {platform && isVideoTestimonial && (
+          <div ref={contentRef} className="mt-6">
+            <VideoTestimonialCard disabled={!canGenerate} disabledReason={canGenerateReason} />
           </div>
-          <ReviewMethodSelector
-            value={method}
-            disabled={!platform || !reward}
-            onChange={(next) => {
-              setMethod(next);
-              setStatus("idle");
-              setReview("");
-              setErrorMessage("");
-              setOpened(false);
-            }}
-          />
-        </section>
+        )}
 
         {platform && method && (
           <div ref={contentRef} className="mt-6">
@@ -291,7 +306,7 @@ function ReviewPage() {
               their project value — a separate program, kept clear of review rewards.
             </p>
           </div>
-          <a href="#">Learn about referrals</a>
+          <Link to="/refer">Learn about referrals</Link>
         </div>
 
         <p className="disclosure">We only ever ask for honest feedback.</p>
