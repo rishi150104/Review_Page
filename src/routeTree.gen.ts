@@ -10,12 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ReferRouteImport } from './routes/refer'
 import { Route as ReviewRouteImport } from './routes/review'
 import { Route as ApiGenerateReviewRouteImport } from './routes/api/generate-review'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReferRoute = ReferRouteImport.update({
+  id: '/refer',
+  path: '/refer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReviewRoute = ReviewRouteImport.update({
@@ -31,30 +37,34 @@ const ApiGenerateReviewRoute = ApiGenerateReviewRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/refer': typeof ReferRoute
   '/review': typeof ReviewRoute
   '/api/generate-review': typeof ApiGenerateReviewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/refer': typeof ReferRoute
   '/review': typeof ReviewRoute
   '/api/generate-review': typeof ApiGenerateReviewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/refer': typeof ReferRoute
   '/review': typeof ReviewRoute
   '/api/generate-review': typeof ApiGenerateReviewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/review' | '/api/generate-review'
+  fullPaths: '/' | '/refer' | '/review' | '/api/generate-review'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/review' | '/api/generate-review'
-  id: '__root__' | '/' | '/review' | '/api/generate-review'
+  to: '/' | '/refer' | '/review' | '/api/generate-review'
+  id: '__root__' | '/' | '/refer' | '/review' | '/api/generate-review'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ReferRoute: typeof ReferRoute
   ReviewRoute: typeof ReviewRoute
   ApiGenerateReviewRoute: typeof ApiGenerateReviewRoute
 }
@@ -66,6 +76,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/refer': {
+      id: '/refer'
+      path: '/refer'
+      fullPath: '/refer'
+      preLoaderRoute: typeof ReferRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/review': {
@@ -87,6 +104,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ReferRoute: ReferRoute,
   ReviewRoute: ReviewRoute,
   ApiGenerateReviewRoute: ApiGenerateReviewRoute,
 }
