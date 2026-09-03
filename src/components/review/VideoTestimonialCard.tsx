@@ -1,14 +1,6 @@
-import { Video } from "lucide-react";
+import { Mail, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { logSubmission } from "@/lib/log-submission";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
 
 interface VideoTestimonialCardProps {
   name: string;
@@ -38,40 +30,37 @@ export function VideoTestimonialCard({
         Record a short video sharing your experience and send it our way.
       </p>
 
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button
-            size="lg"
-            className="mt-6 h-12 w-full sm:w-auto"
-            disabled={disabled}
-            onClick={() => logSubmission({ name, email, platform: platformId, reward, method: "video" })}
-          >
-            <Video className="size-4" aria-hidden="true" />
-            View Instructions
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Submit your video testimonial</DialogTitle>
-            <DialogDescription>
-              Please email your video to{" "}
-              <a href={`mailto:${SUBMISSION_EMAIL}`} className="font-medium text-foreground underline">
-                {SUBMISSION_EMAIL}
-              </a>
-              .
-            </DialogDescription>
-          </DialogHeader>
-          <ul className="list-disc space-y-1.5 pl-5 text-sm leading-relaxed text-muted-foreground">
-            <li>50–60 seconds, in portrait format.</li>
-            <li>A simple phone video is perfect — selfie or regular camera, with no editing needed.</li>
-            <li>If possible, choose a quiet place so we can hear you clearly.</li>
-            <li>
-              Tell us about your experience, what we did, and the results you saw. And if
-              you&apos;d recommend Prince / ViralChilly to others.
-            </li>
-          </ul>
-        </DialogContent>
-      </Dialog>
+      <div className="mt-5 rounded-xl border border-border bg-surface p-5">
+        <p className="flex items-center gap-2 text-sm font-medium text-foreground">
+          <Mail className="size-4 shrink-0" aria-hidden="true" />
+          Email your video to{" "}
+          <a href={`mailto:${SUBMISSION_EMAIL}`} className="font-semibold text-primary underline">
+            {SUBMISSION_EMAIL}
+          </a>
+        </p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Click the address above to get directed to your mail app.
+        </p>
+        <ul className="mt-4 list-disc space-y-1.5 pl-5 text-sm leading-relaxed text-muted-foreground">
+          <li>50–60 seconds, in portrait format.</li>
+          <li>A simple phone video is perfect — selfie or regular camera, with no editing needed.</li>
+          <li>If possible, choose a quiet place so we can hear you clearly.</li>
+          <li>
+            Tell us about your experience, what we did, and the results you saw. And if
+            you&apos;d recommend Prince / ViralChilly to others.
+          </li>
+        </ul>
+      </div>
+
+      <Button
+        size="lg"
+        className="mt-6 h-12 w-full sm:w-auto"
+        disabled={disabled}
+        onClick={() => logSubmission({ name, email, platform: platformId, reward, method: "video" })}
+      >
+        <Video className="size-4" aria-hidden="true" />
+        Submit
+      </Button>
 
       {disabled && <p className="mt-3 text-sm text-muted-foreground">{disabledReason}</p>}
     </section>
