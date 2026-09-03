@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import type { Platform } from "@/config/platforms";
 
-const FEEDBACK_EMAIL = "feedback@viralchilly.com";
+const FEEDBACK_EMAIL = "prince@viralchilly.com";
 
 interface GeneratedReviewProps {
   platform: Platform;

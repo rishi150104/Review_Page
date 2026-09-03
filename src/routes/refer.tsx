@@ -420,7 +420,7 @@ function ReferPage() {
               <div className="reward-amount">
                 <div className="small">You earn</div>
                 <strong>10%</strong>
-                <p>of the qualifying project value</p>
+                <p>commission once the project gets started</p>
               </div>
             </Reveal>
           </div>
@@ -605,9 +605,9 @@ function ReferPage() {
               A referral should be a reflection of trust — not a transaction disguised as one.
             </blockquote>
             <p>
-              Our referral program rewards genuine introductions. It is completely separate from
-              reviews, testimonials, ratings and customer feedback. We will never ask you or anyone
-              you refer to provide positive feedback in exchange for a reward.
+              Our referral program rewards genuine introductions. It&apos;s tracked and rewarded
+              separately from our client review program, so an introduction and a review are
+              always valued on their own terms.
             </p>
           </Reveal>
         </div>

@@ -47,7 +47,7 @@ export function VideoTestimonialCard({
             onClick={() => logSubmission({ name, email, platform: platformId, reward, method: "video" })}
           >
             <Video className="size-4" aria-hidden="true" />
-            Submit Video Testimonial
+            View Instructions
           </Button>
         </DialogTrigger>
         <DialogContent>
