@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { appendSubmissionRow } from "@/lib/google-sheets";
+import { istTimestamp } from "@/lib/ist-time";
 
 const bodySchema = z.object({
   yourName: z.string().min(1),
@@ -26,7 +27,7 @@ export const Route = createFileRoute("/api/submit-referral")({
         try {
           await appendSubmissionRow(
             [
-              new Date().toISOString(),
+              istTimestamp(),
               parsed.yourName,
               parsed.yourEmail,
               parsed.referralName,
