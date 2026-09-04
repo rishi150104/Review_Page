@@ -22,10 +22,11 @@ const bodySchema = z.object({
   }),
 });
 
-const SYSTEM_PROMPT = `You help a real client articulate their experience with a digital marketing agency as a first-person review draft.
+const SYSTEM_PROMPT = `You help a real client articulate their experience with a digital marketing agency named Viralchilly as a first-person review draft.
 
 Strict rules:
 - Use ONLY the information the client provided. Never invent results, statistics, services, timelines, names, experiences, or outcomes.
+- Mention the agency by name, Viralchilly, somewhere in the review.
 - The review should be natural, human, and believable.
 - Aim for a mildly positive tone when the client's input supports it, but never make the review overly positive, promotional, or exaggerated.
 - If the client provides positive information, focus on those positive points.
