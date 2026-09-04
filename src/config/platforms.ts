@@ -43,7 +43,7 @@ export const platforms: Platform[] = [
     displayName: "Clutch",
     category: "Review Platforms",
     icon: "star",
-    reviewUrl: PLACEHOLDER,
+    reviewUrl: "https://clutch.co/go-to-review/c45baf53-509e-49cb-8974-a4ece3c4a906/316438",
     active: true,
   },
   {
@@ -70,7 +70,7 @@ export const platforms: Platform[] = [
     displayName: "Trustpilot",
     category: "Review Platforms",
     icon: "star",
-    reviewUrl: PLACEHOLDER,
+    reviewUrl: "https://www.trustpilot.com/evaluate/viralchilly.com",
     active: true,
   },
   {
