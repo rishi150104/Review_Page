@@ -253,6 +253,7 @@ function ReviewPage() {
               reward={reward ?? ""}
               disabled={!canGenerate}
               disabledReason={canGenerateReason}
+              onOpened={() => setOpened(true)}
             />
           </div>
         )}

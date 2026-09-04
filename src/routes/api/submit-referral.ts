@@ -6,10 +6,7 @@ import { istTimestamp } from "@/lib/ist-time";
 const bodySchema = z.object({
   yourName: z.string().min(1),
   yourEmail: z.string().email(),
-  referralName: z.string().min(1),
-  referralEmail: z.string().email(),
-  company: z.string().min(1),
-  services: z.array(z.string()).min(1),
+  services: z.array(z.string()).default([]),
   message: z.string().default(""),
 });
 
@@ -30,9 +27,6 @@ export const Route = createFileRoute("/api/submit-referral")({
               istTimestamp(),
               parsed.yourName,
               parsed.yourEmail,
-              parsed.referralName,
-              parsed.referralEmail,
-              parsed.company,
               parsed.services.join(", "),
               parsed.message,
             ],

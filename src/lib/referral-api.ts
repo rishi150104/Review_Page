@@ -1,9 +1,6 @@
 export interface ReferralSubmission {
   yourName: string;
   yourEmail: string;
-  referralName: string;
-  referralEmail: string;
-  company: string;
   services: string[];
   message: string;
 }

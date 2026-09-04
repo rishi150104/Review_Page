@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Reveal } from "@/components/refer/Reveal";
 import { useReveal } from "@/components/refer/useReveal";
@@ -216,8 +216,12 @@ function FaqItem({ item, index }: { item: (typeof FAQ_ITEMS)[number]; index: num
   );
 }
 
+const THANK_YOU_VISIBLE_MS = 2600;
+const THANK_YOU_LEAVE_MS = 300;
+
 function ReferPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [leaving, setLeaving] = useState(false);
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [status, setStatus] = useState<"idle" | "loading">("idle");
   const [errorMessage, setErrorMessage] = useState("");
@@ -228,9 +232,22 @@ function ReferPage() {
     );
   };
 
+  useEffect(() => {
+    if (!submitted) return;
+    const leaveTimer = window.setTimeout(() => setLeaving(true), THANK_YOU_VISIBLE_MS);
+    const resetTimer = window.setTimeout(() => {
+      setSubmitted(false);
+      setLeaving(false);
+    }, THANK_YOU_VISIBLE_MS + THANK_YOU_LEAVE_MS);
+    return () => {
+      window.clearTimeout(leaveTimer);
+      window.clearTimeout(resetTimer);
+    };
+  }, [submitted]);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (selectedServices.length === 0 || status === "loading") return;
+    if (status === "loading") return;
 
     const form = e.currentTarget;
     const data = new FormData(form);
@@ -240,16 +257,12 @@ function ReferPage() {
       await submitReferral({
         yourName: String(data.get("yourName") ?? ""),
         yourEmail: String(data.get("yourEmail") ?? ""),
-        referralName: String(data.get("referralName") ?? ""),
-        referralEmail: String(data.get("referralEmail") ?? ""),
-        company: String(data.get("company") ?? ""),
         services: selectedServices,
         message: String(data.get("message") ?? ""),
       });
       form.reset();
       setSelectedServices([]);
       setSubmitted(true);
-      window.setTimeout(() => setSubmitted(false), 3000);
     } catch (err) {
       setErrorMessage(err instanceof Error ? err.message : "Something went wrong. Please try again.");
     } finally {
@@ -486,112 +499,94 @@ function ReferPage() {
           </Reveal>
 
           <Reveal delay={120} className="form-box">
-            <div className="form-box-header">
-              <h3>Tell us about your referral</h3>
-              <p>A few details are all we need to get started.</p>
-            </div>
-
-            <form className="form" onSubmit={handleSubmit}>
-              <div className="field-row">
-                <div className="field">
-                  <label htmlFor="yourName">Your name</label>
-                  <input id="yourName" name="yourName" type="text" placeholder="Jane Smith" required />
-                </div>
-                <div className="field">
-                  <label htmlFor="yourEmail">Your email</label>
-                  <input
-                    id="yourEmail"
-                    name="yourEmail"
-                    type="email"
-                    placeholder="jane@example.com"
-                    required
-                  />
-                </div>
+            {submitted ? (
+              <div className={`thank-you-panel ${leaving ? "leaving" : ""}`}>
+                <div className="thank-you-check">✓</div>
+                <h3>Thanks for filling the form!</h3>
+                <p>Someone from our team will connect with you shortly.</p>
               </div>
-
-              <div className="field-row">
-                <div className="field">
-                  <label htmlFor="referralName">Referral's name</label>
-                  <input
-                    id="referralName"
-                    name="referralName"
-                    type="text"
-                    placeholder="Alex Morgan"
-                    required
-                  />
+            ) : (
+              <div className="form-content">
+                <div className="form-box-header">
+                  <h3>Tell us about your referral</h3>
+                  <p>A few details are all we need to get started.</p>
                 </div>
-                <div className="field">
-                  <label htmlFor="referralEmail">Their email</label>
-                  <input
-                    id="referralEmail"
-                    name="referralEmail"
-                    type="email"
-                    placeholder="alex@company.com"
-                    required
-                  />
-                </div>
-              </div>
 
-              <div className="field">
-                <label htmlFor="company">Company / website</label>
-                <input id="company" name="company" type="text" placeholder="company.com" required />
-              </div>
+                <form className="form" onSubmit={handleSubmit}>
+                  <div className="field-row">
+                    <div className="field">
+                      <label htmlFor="yourName">Your name</label>
+                      <input
+                        id="yourName"
+                        name="yourName"
+                        type="text"
+                        placeholder="Jane Smith"
+                        required
+                      />
+                    </div>
+                    <div className="field">
+                      <label htmlFor="yourEmail">Your email</label>
+                      <input
+                        id="yourEmail"
+                        name="yourEmail"
+                        type="email"
+                        placeholder="jane@example.com"
+                        required
+                      />
+                    </div>
+                  </div>
 
-              <div className="field">
-                <label>What could we help them with?</label>
-                <p className="field-hint">Select at least one.</p>
-                <div className="service-options" role="group" aria-label="Services to refer">
-                  {SERVICES.map((service) => (
-                    <button
-                      key={service.id}
-                      type="button"
-                      className="service-option"
-                      aria-pressed={selectedServices.includes(service.id)}
-                      onClick={() => toggleService(service.id)}
-                    >
-                      {service.label}
-                    </button>
-                  ))}
+                  <div className="field">
+                    <label>What could we help them with?</label>
+                    <p className="field-hint">Optional — select any that apply.</p>
+                    <div className="service-options" role="group" aria-label="Services to refer">
+                      {SERVICES.map((service) => (
+                        <button
+                          key={service.id}
+                          type="button"
+                          className="service-option"
+                          aria-pressed={selectedServices.includes(service.id)}
+                          onClick={() => toggleService(service.id)}
+                        >
+                          {service.label}
+                        </button>
+                      ))}
+                      <button
+                        type="button"
+                        className="service-option"
+                        aria-pressed={selectedServices.includes("other")}
+                        onClick={() => toggleService("other")}
+                      >
+                        Not sure
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="field">
+                    <label htmlFor="message">Message</label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      placeholder="Give us a little context about the person, their business and what they're looking for..."
+                    />
+                  </div>
+
                   <button
-                    type="button"
-                    className="service-option"
-                    aria-pressed={selectedServices.includes("other")}
-                    onClick={() => toggleService("other")}
+                    type="submit"
+                    className="button button-primary submit"
+                    disabled={status === "loading"}
                   >
-                    Something else
+                    {status === "loading" ? "Submitting…" : "Submit"}
                   </button>
-                </div>
+
+                  {errorMessage && (
+                    <p className="privacy-note" style={{ color: "#dc2626" }}>
+                      {errorMessage}
+                    </p>
+                  )}
+                </form>
               </div>
-
-              <div className="field">
-                <label htmlFor="message">Why do you think we'd be a good fit?</label>
-                <textarea
-                  id="message"
-                  name="message"
-                  placeholder="Give us a little context about the person, their business and what they're looking for..."
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="button button-primary submit"
-                disabled={submitted || status === "loading" || selectedServices.length === 0}
-                style={submitted ? { background: "#1d4ed8" } : undefined}
-              >
-                {submitted
-                  ? "Introduction received ✓"
-                  : status === "loading"
-                    ? "Submitting…"
-                    : "Submit introduction →"}
-              </button>
-
-              {errorMessage && <p className="privacy-note" style={{ color: "#dc2626" }}>{errorMessage}</p>}
-
-              <p className="privacy-note">
-                Please make sure you have permission to share the person's contact information with
-                us.
-              </p>
-            </form>
+            )}
           </Reveal>
         </div>
       </section>

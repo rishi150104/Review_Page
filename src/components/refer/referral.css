@@ -729,6 +729,9 @@
   color: #93c5fd;
 }
 .vc-refer .form-box {
+  display: flex;
+  flex-direction: column;
+  min-height: 620px;
   padding: 40px;
   border-radius: 25px;
   background: white;
@@ -834,6 +837,60 @@
   text-align: center;
   font-size: 11px;
   line-height: 1.5;
+}
+
+/* Thank-you panel */
+.vc-refer .form-content,
+.vc-refer .thank-you-panel {
+  animation: panel-fade-in 0.35s cubic-bezier(0.16, 0.8, 0.24, 1);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+.vc-refer .thank-you-panel {
+  margin: auto 0;
+  padding: 34px 0;
+  text-align: center;
+}
+.vc-refer .thank-you-panel.leaving {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+.vc-refer .thank-you-check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: #dcfce7;
+  color: #16a34a;
+  font-size: 24px;
+  font-weight: 700;
+}
+.vc-refer .thank-you-panel h3 {
+  margin-top: 20px;
+  color: var(--ink);
+  font-family: var(--lp-serif);
+  font-size: 26px;
+}
+.vc-refer .thank-you-panel p {
+  max-width: 380px;
+  margin: 12px auto 0;
+  color: var(--slate);
+  font-size: 14px;
+  line-height: 1.65;
+}
+@keyframes panel-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* Trust */
