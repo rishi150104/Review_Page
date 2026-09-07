@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Check, Copy, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PlatformInstructions } from "./PlatformInstructions";
 import {
   Dialog,
   DialogContent,
@@ -70,6 +71,8 @@ export function GeneratedReview({
       <p className="mt-3 text-sm text-muted-foreground">
         Feel free to edit the review before posting so it accurately reflects your experience.
       </p>
+
+      <PlatformInstructions platform={platform} />
 
       <Button asChild size="lg" className="mt-6 h-12">
         <a

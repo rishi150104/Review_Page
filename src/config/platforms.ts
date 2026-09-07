@@ -23,6 +23,8 @@ export interface Platform {
   /** REPLACE the PLACEHOLDER values below with real company profile URLs. */
   reviewUrl: string;
   active: boolean;
+  /** Optional step-by-step instructions shown above the "leave review" button. */
+  instructions?: string[];
 }
 
 const PLACEHOLDER = "https://example.com/replace-with-company-profile-url";
@@ -45,6 +47,15 @@ export const platforms: Platform[] = [
     icon: "star",
     reviewUrl: "https://clutch.co/go-to-review/c45baf53-509e-49cb-8974-a4ece3c4a906/316438",
     active: true,
+    instructions: [
+      "Scroll down and click \"Submit a Review\" in the Viralchilly reviews section.",
+      "Click Get Started.",
+      "Create your account using Google, LinkedIn, or email.",
+      "Once your account is created, pick Classic Review Form or AI Powered Chat (recommended).",
+      "Fill in your personal details: name, email, and website URL.",
+      "Answer all the questions — Clutch will generate a review for you.",
+      "Click Submit a Review.",
+    ],
   },
   {
     id: "google",
@@ -72,6 +83,13 @@ export const platforms: Platform[] = [
     icon: "star",
     reviewUrl: "https://www.trustpilot.com/evaluate/viralchilly.com",
     active: true,
+    instructions: [
+      "Click the button below to open Viralchilly's page on Trustpilot.",
+      "Rate us, then write your review in \"Tell us more about your experience\".",
+      "Give your review a title (optional).",
+      "Create your account using Google, Facebook, Apple, or email.",
+      "Click Submit review.",
+    ],
   },
   {
     id: "linkedin",
@@ -79,8 +97,13 @@ export const platforms: Platform[] = [
     displayName: "LinkedIn",
     category: "Social",
     icon: "linkedin",
-    reviewUrl: PLACEHOLDER,
+    reviewUrl: "https://www.linkedin.com/in/princekapoor",
     active: true,
+    instructions: [
+      "Click the button below to open Prince Kapoor's LinkedIn profile.",
+      "Send a connection request.",
+      "We'll send you a recommendation link on your LinkedIn.",
+    ],
   },
   {
     id: "facebook",

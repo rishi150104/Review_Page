@@ -1,4 +1,5 @@
 import { PlatformReviewButton } from "./PlatformReviewButton";
+import { PlatformInstructions } from "./PlatformInstructions";
 import type { Platform } from "@/config/platforms";
 
 interface SelfWriteCardProps {
@@ -22,6 +23,7 @@ export function SelfWriteCard({
       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
         Click below to open our profile on {platform.displayName} and leave your review.
       </p>
+      <PlatformInstructions platform={platform} />
       <PlatformReviewButton
         platform={platform}
         onOpened={onOpened}
